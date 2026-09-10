@@ -1,0 +1,9 @@
+[package]
+name = "act_omega_tensor_vault"
+version = "27.0.0"
+edition = "2021"
+authors = ["Sovereign Manifold Developer"]
+description = "5-Tier Canonical Topological Tensor Vault & RaBitQ Memory"
+
+[dependencies]
+# Native pure Rust core

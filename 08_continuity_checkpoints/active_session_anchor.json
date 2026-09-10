@@ -1,0 +1,11 @@
+{
+  "sessionId": "SESSION_RESTORE_TEST",
+  "superStepEpoch": 42,
+  "activeBraidWord": "sigma_1 sigma_2",
+  "topologicalCharge": 1,
+  "parityTrace": 1,
+  "phaseDelta": 0.17259029,
+  "landauerJoules": 0.035,
+  "invariantsLocked": true,
+  "timestamp": "2026-09-03T01:34:46.501Z"
+}

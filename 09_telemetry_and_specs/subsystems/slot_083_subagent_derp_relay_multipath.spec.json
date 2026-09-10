@@ -1,0 +1,14 @@
+{
+  "slot_id": 83,
+  "module_name": "SUBAGENT_DERP_RELAY_MULTIPATH",
+  "chunk": 1,
+  "category": "EdgeNPU",
+  "role": "Port 8098 Multipath Gateway",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACT-Ω v27.0 | 3D Magnetic Flux Scope & Spatial Compass</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    body { margin: 0; background: #030712; color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; overflow: hidden; }
+    #canvas-container { position: absolute; inset: 0; z-index: 1; }
+    .hud-overlay { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem; }
+    .panel { background: rgba(17, 24, 39, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1rem 1.25rem; pointer-events: auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .title { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.02em; color: #38bdf8; display: flex; align-items: center; gap: 0.5rem; }
+    .badge { font-size: 0.65rem; background: #0369a1; color: #e0f2fe; padding: 0.2rem 0.5rem; border-radius: 9999px; font-weight: 700; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+    .metric-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+    .metric-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
+    .metric-val { font-size: 1.05rem; font-weight: 800; color: #f3f4f6; font-family: monospace; }
+    .b2-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; margin-right: 0.35rem; box-shadow: 0 0 10px #22c55e; }
+    .b2-void { background: #ef4444; box-shadow: 0 0 15px #ef4444; animation: pulse 0.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div class="hud-overlay">
+    <header class="panel header">
+      <div class="title">
+        <span>ACT-Ω v27.0</span>
+        <span class="badge">TASK 23 HUD</span>
+        <span class="badge" style="background:#065f46; color:#a7f3d0;" id="transport-badge">USB 3.2 TETHER</span>
+      </div>
+      <div>
+        <span id="b2-dot" class="b2-indicator"></span>
+        <span id="b2-status" style="font-size:0.8rem; font-weight:700; color:#22c55e;">STATIC BASELINE</span>
+      </div>
+    </header>
+
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem;">
+      <div class="panel" style="width:340px;">
+        <div style="font-size:0.75rem; font-weight:800; color:#cbd5e1; margin-bottom:0.5rem;">COSMOLOGICAL & VACUUM METRICS</div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">T_vac (Landauer)</div>
+            <div class="metric-val" id="tvac-val" style="color:#38bdf8;">2.70 K</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">b2 Rate (rec/s)</div>
+            <div class="metric-val" id="b2-val" style="color:#4ade80;">88.99</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">b3 Volumetric</div>
+            <div class="metric-val" id="b3-val" style="color:#a855f7;">6.76 /s</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Entropy H (Martellini)</div>
+            <div class="metric-val" id="entropy-val" style="color:#facc15;">9.38 nats/s</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="width:300px;">
+        <div style="font-size:0.75rem; font-weight:800; color:#cbd5e1; margin-bottom:0.5rem;">MISSOULA B_TOR SPATIAL LOCK</div>
+        <div style="font-size:0.7rem; color:#94a3b8; font-family:monospace; line-height:1.4;">
+          Anchor B_tor: (-13.34, 13.64, -41.84) µT<br>
+          Current |δB|: <span id="delta-mag" style="color:#f43f5e; font-weight:bold;">0.0000</span> µT<br>
+          Parity Tr(U): <span style="color:#22c55e; font-weight:bold;">1.000000</span> (Majorana-1)<br>
+          Super-Step  : <span id="step-epoch" style="color:#e2e8f0;">5010900</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Three.js 3D Vector Scope Setup
+    const container = document.getElementById("canvas-container");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 12);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // Grid & Coordinates
+    const grid = new THREE.GridHelper(10, 20, 0x0284c7, 0x1e293b);
+    scene.add(grid);
+
+    // Anchor Vector (Missoula B_tor) - Cyan
+    const bTorDir = new THREE.Vector3(-13.335, 13.640, -41.841).normalize();
+    const bTorArrow = new THREE.ArrowHelper(bTorDir, new THREE.Vector3(0,0,0), 4, 0x06b6d4, 0.6, 0.3);
+    scene.add(bTorArrow);
+
+    // Dynamic Measured Vector - Amber / Crimson
+    const activeDir = new THREE.Vector3(0, 1, 0);
+    const activeArrow = new THREE.ArrowHelper(activeDir, new THREE.Vector3(0,0,0), 4.2, 0xf59e0b, 0.6, 0.3);
+    scene.add(activeArrow);
+
+    // Betti Cavity Dynamic Rings
+    const ringGeo = new THREE.RingGeometry(4.3, 4.4, 64);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide });
+    const b2Ring = new THREE.Mesh(ringGeo, ringMat);
+    b2Ring.rotation.x = Math.PI / 2;
+    scene.add(b2Ring);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      grid.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // WebSocket Telemetry Connection to Local Edge Gateway
+    const wsUrl = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+      ? "ws://127.0.0.1:8098/ws"
+      : "ws://" + location.hostname + ":8098/ws";
+
+    function connectWs() {
+      const ws = new WebSocket(wsUrl);
+      ws.onmessage = (e) => {
+        try {
+          const d = JSON.parse(e.data);
+          if (d.event === "NPU_SLOT_FRAME") {
+            document.getElementById("step-epoch").textContent = d.epoch;
+            document.getElementById("delta-mag").textContent = d.deltaMagUt.toFixed(4);
+            document.getElementById("tvac-val").textContent = (d.tvac || 2.70).toFixed(2) + " K";
+            document.getElementById("b2-val").textContent = (d.b2Rate || 88.99).toFixed(2);
+            document.getElementById("entropy-val").textContent = ((d.b2Rate || 88.99) * 0.10536).toFixed(2) + " nats/s";
+
+            // Update Dynamic Vector in 3D
+            const currentVec = new THREE.Vector3(
+              d.currentMag ? d.currentMag.x : -13.335 + d.deltaMagUt,
+              d.currentMag ? d.currentMag.y : 13.640,
+              d.currentMag ? d.currentMag.z : -41.841
+            ).normalize();
+            activeArrow.setDirection(currentVec);
+
+            // Betti Cavity Visual Trigger
+            if (d.isB2VoidDetected) {
+              document.getElementById("b2-dot").className = "b2-indicator b2-void";
+              document.getElementById("b2-status").textContent = "b2 CAVITY TRAVERSED";
+              document.getElementById("b2-status").style.color = "#ef4444";
+              ringMat.color.setHex(0xef4444);
+            } else {
+              document.getElementById("b2-dot").className = "b2-indicator";
+              document.getElementById("b2-status").textContent = "STATIC BASELINE";
+              document.getElementById("b2-status").style.color = "#22c55e";
+              ringMat.color.setHex(0x22c55e);
+            }
+          }
+        } catch (_) {}
+      };
+      ws.onclose = () => setTimeout(connectWs, 2000);
+    }
+    connectWs();
+  </script>
+</body>
+</html>

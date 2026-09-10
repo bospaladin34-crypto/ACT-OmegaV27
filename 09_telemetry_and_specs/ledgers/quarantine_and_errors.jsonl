@@ -1,0 +1,2 @@
+﻿{"timestamp":"2026-08-29T05:41:00.606Z","epoch":105200,"slot":4,"event":"SASSIFI_INOCULATION_TEST","injected_phase_delta":0.95,"recovery_phase":4,"parity_restored":1.000000,"status":"RESOLVED"}
+{"timestamp":"2026-08-29T20:32:18.799Z","epoch":105500,"slot":40,"event":"SASSIFI_AUTONOMOUS_DREAM_CYCLE","injected_fault":"PHASE_TURBULENCE_0.85RAD","super_steps_to_heal":2,"final_parity":1.000000,"status":"ALL_INVARIANTS_CONSERVED"}

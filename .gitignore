@@ -1,0 +1,28 @@
+# Build Binaries & Compilation Artifacts
+target/
+**/target/
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+*.obj
+*.o
+*.a
+*.lib
+
+# Archive Snapshots & Large Dumps
+*.zip
+*.tar.gz
+*.7z
+*.tmp
+
+# IDE & OS Caches
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+node_modules/
+
+# Local Temporary Files
+data/blind/_key_sealed*.json

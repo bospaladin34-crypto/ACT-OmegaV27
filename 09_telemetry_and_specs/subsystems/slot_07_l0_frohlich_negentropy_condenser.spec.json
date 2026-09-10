@@ -1,0 +1,13 @@
+{
+  "slot_id": 7,
+  "module_name": "L0_FROHLICH_NEGENTROPY_CONDENSER",
+  "language": "Rust",
+  "category": "Compute",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

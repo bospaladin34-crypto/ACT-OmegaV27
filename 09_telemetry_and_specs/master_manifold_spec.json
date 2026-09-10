@@ -1,0 +1,29 @@
+{
+  "manifold_version": "27.0.0",
+  "build_date": "2026-08-29",
+  "root_path": "C:\\sovereign_manifold_v27\\",
+  "shared_memory_ring": {
+    "name": "Global\\ACT_OMEGA_E8_HYPER_MANIFOLD",
+    "size_bytes": 67108864,
+    "slot_table_offset": 0,
+    "slot_table_capacity": 128,
+    "chunks_committed": 2,
+    "data_arena_offset": 65536
+  },
+  "carrier_clock": {
+    "frequency_hz": 15.965,
+    "interval_ms": 62.636
+  },
+  "invariants": {
+    "majorana_parity_lock": 1.000000,
+    "thalamic_phase_delta_limit": 0.40,
+    "landauer_joules_limit": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "elastic_hydro_bus": {
+    "chunk_size_slots": 64,
+    "active_slots": 55,
+    "total_slots": 128,
+    "chunks_count": 2
+  }
+}

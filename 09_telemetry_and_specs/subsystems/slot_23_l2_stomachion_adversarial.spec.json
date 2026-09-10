@@ -1,0 +1,13 @@
+{
+  "slot_id": 23,
+  "module_name": "L2_STOMACHION_ADVERSARIAL",
+  "language": "Deno/TS",
+  "category": "Orchestration",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

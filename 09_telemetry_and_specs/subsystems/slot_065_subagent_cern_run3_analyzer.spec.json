@@ -1,0 +1,14 @@
+{
+  "slot_id": 65,
+  "module_name": "SUBAGENT_CERN_RUN3_ANALYZER",
+  "chunk": 1,
+  "category": "Research",
+  "role": "Collision Anomaly Scanner",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

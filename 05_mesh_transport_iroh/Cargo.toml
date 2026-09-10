@@ -1,0 +1,9 @@
+[package]
+name = "act_omega_mesh_transport"
+version = "27.0.0"
+edition = "2021"
+authors = ["Sovereign Manifold Developer"]
+description = "Carrier-NAT-Proof Iroh QUIC Mesh Transport & 3-Tier Fallback"
+
+[dependencies]
+# Standalone pure Rust mesh protocol

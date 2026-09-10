@@ -1,0 +1,14 @@
+{
+  "slot_id": 84,
+  "module_name": "SUBAGENT_ADB_REVERSE_FORWARDER",
+  "chunk": 1,
+  "category": "EdgeNPU",
+  "role": "USB 3.2 Port Manager",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

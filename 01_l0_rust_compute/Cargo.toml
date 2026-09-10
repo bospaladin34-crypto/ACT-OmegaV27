@@ -1,0 +1,13 @@
+﻿[package]
+name = "act_omega_l0_compute"
+version = "27.0.0"
+edition = "2021"
+authors = ["Sovereign Manifold Developer"]
+description = "ACT-Omega v27.0 L0 Hardware-Anchored Topological Compute Core"
+
+[lib]
+name = "vesper_ffi"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Standard library standalone core with optional external FOSS math

@@ -1,0 +1,13 @@
+{
+  "registry_schema_version": "1.0",
+  "server_node_id": "SOVEREIGN_MANIFOLD_SERVER_WIN11",
+  "registered_devices": [
+    {
+      "device_hash": "0xa8f3b29c01d4e765",
+      "device_alias": "Pixel-10-Tensor-G5",
+      "assigned_hydro_slot": 50,
+      "transport_tier": "Tier1DirectQuic",
+      "status": "ENROLLED"
+    }
+  ]
+}

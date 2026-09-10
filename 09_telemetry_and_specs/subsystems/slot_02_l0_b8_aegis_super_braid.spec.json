@@ -1,0 +1,13 @@
+{
+  "slot_id": 2,
+  "module_name": "L0_B8_AEGIS_SUPER_BRAID",
+  "language": "Rust",
+  "category": "Compute",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

@@ -1,0 +1,14 @@
+{
+  "slot_id": 70,
+  "module_name": "SUBAGENT_MATERIALS_CATALOG",
+  "chunk": 1,
+  "category": "Research",
+  "role": "Crystal BOM Validator",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

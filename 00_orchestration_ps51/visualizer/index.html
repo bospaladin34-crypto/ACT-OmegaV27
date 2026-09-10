@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ACT-Ω v27.0 Sovereign Manifold Interactive 3D HUD</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #06080e; color: #00ffcc; font-family: 'Segoe UI', Consolas, monospace; overflow: hidden; user-select: none; }
+    #canvas-container { position: absolute; width: 100vw; height: 100vh; z-index: 1; cursor: grab; }
+    #canvas-container:active { cursor: grabbing; }
+    canvas { width: 100%; height: 100%; display: block; }
+    
+    #hud-panel {
+      position: absolute; top: 16px; left: 16px; z-index: 10;
+      background: rgba(8, 12, 20, 0.94); border: 1px solid #00ffcc;
+      padding: 16px 20px; border-radius: 8px; box-shadow: 0 0 25px rgba(0,255,204,0.3);
+      width: 480px; font-size: 12px; line-height: 1.5;
+      backdrop-filter: blur(10px);
+    }
+    .hud-title {
+      font-size: 14.5px; font-weight: bold; color: #fff; margin-bottom: 8px;
+      border-bottom: 1px solid #00ffcc; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .hud-section { font-weight: bold; color: #00aaff; margin-top: 6px; margin-bottom: 2px; font-size: 10.5px; text-transform: uppercase; border-bottom: 1px dashed rgba(0,170,255,0.3); }
+    .hud-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .hud-val { color: #fff; font-weight: bold; }
+    .status-ok { color: #00ff66; }
+    .badge-npu { background: rgba(0,255,102,0.15); border: 1px solid #00ff66; color: #00ff66; padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: bold; }
+    .badge-void { background: rgba(255,0,170,0.2); border: 1px solid #ff00aa; color: #ff00aa; padding: 1px 5px; border-radius: 4px; font-size: 10.5px; font-weight: bold; }
+    .pulse-dot { width: 8px; height: 8px; background: #00ff66; border-radius: 50%; display: inline-block; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+    
+    #matrix-panel {
+      position: absolute; top: 16px; right: 16px; z-index: 10;
+      background: rgba(8, 12, 20, 0.92); border: 1px solid rgba(0,255,204,0.4);
+      padding: 12px 16px; border-radius: 8px; width: 360px; font-size: 11px;
+      backdrop-filter: blur(8px);
+    }
+    .matrix-grid { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; margin-top: 6px; }
+    .matrix-cell { width: 15px; height: 15px; background: #131c2a; border-radius: 2px; border: 1px solid #1f334d; cursor: pointer; transition: transform 0.1s; }
+    .matrix-cell:hover { transform: scale(1.3); border-color: #fff; z-index: 15; }
+    .cell-active { background: #00ffcc; border-color: #fff; box-shadow: 0 0 4px #00ffcc; }
+    .cell-npu { background: #00ff66; border-color: #fff; box-shadow: 0 0 6px #00ff66; animation: pulse 0.8s infinite; }
+    .cell-subagent { background: #ff00aa; border-color: #fff; }
+    
+    #root-tooltip {
+      position: absolute; bottom: 20px; left: 16px; z-index: 20;
+      background: rgba(10, 16, 26, 0.96); border: 1px solid #ff00aa;
+      padding: 10px 14px; border-radius: 6px; font-size: 11.5px; display: none;
+      box-shadow: 0 0 20px rgba(255,0,170,0.4); pointer-events: none; max-width: 420px;
+    }
+    
+    .chart-label { font-size: 10px; color: #8899aa; margin-top: 4px; display: flex; justify-content: space-between; }
+    .chart-canvas { width: 100%; height: 38px; background: rgba(0,0,0,0.45); border-radius: 4px; border: 1px solid rgba(0,255,204,0.2); }
+    
+    #node-anchor { position: absolute; bottom: 16px; right: 16px; z-index: 10; font-size: 11px; color: #8899aa; text-align: right; background: rgba(8, 12, 20, 0.88); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,255,204,0.2); }
+  </style>
+</head>
+<body>
+  <div id="hud-panel">
+    <div class="hud-title">
+      <span>ACT-&Omega; v27.0 CYBERNETIC HUD</span>
+      <span class="pulse-dot"></span>
+    </div>
+
+    <div class="hud-section">Host Invariants & Chronometry</div>
+    <div class="hud-row"><span>Super-Step Epoch:</span><span id="val-epoch" class="hud-val">108200</span></div>
+    <div class="hud-row"><span>Parity Lock (Tr):</span><span id="val-parity" class="hud-val status-ok">1.000000 (Conserved)</span></div>
+    <div class="hud-row"><span>Operating Phase Delta:</span><span id="val-phase" class="hud-val">&nu;<sub>p</sub> = 0.172590 rad</span></div>
+    
+    <div class="chart-label"><span>Phase Delta Oscillation (&nu;<sub>p</sub>)</span><span>Stability: |&Delta;&Phi;| &le; 0.40</span></div>
+    <canvas id="phaseChart" class="chart-canvas"></canvas>
+
+    <div class="hud-section">Pixel 10 Live Edge Node (Slot 50)</div>
+    <div class="hud-row"><span>NPU Hardware State:</span><span id="val-pixel-status" class="badge-npu">1:1 MESH LOCKED</span></div>
+    <div class="hud-row"><span>Tensor G5 Batch Latency:</span><span id="val-npu-lat" class="hud-val">42.5 &mu;s / batch (64 Tensors)</span></div>
+    <div class="hud-row"><span>Lifetime Tensors Computed:</span><span id="val-npu-total" class="hud-val">128,000 Tensors</span></div>
+    <div class="hud-row"><span>Magnetic &delta;B Flux:</span><span id="val-pixel-mag" class="hud-val">0.0842 &mu;T <span class="badge-void">b2 VOID</span></span></div>
+    
+    <div class="chart-label"><span>Magnetic Flux &delta;B (&mu;T)</span><span>b2 Threshold: &gt; 0.053 &mu;T</span></div>
+    <canvas id="magChart" class="chart-canvas"></canvas>
+
+    <div class="hud-section">Entropic Time & Grounding</div>
+    <div class="hud-row"><span>Entropic b2 Record Rate:</span><span id="val-b2" class="hud-val">88.99 rec/s (9.34 nats/s)</span></div>
+    <div class="hud-row"><span>Landauer Dissipation:</span><span id="val-heat" class="hud-val">0.0421 J / 1.4411 J</span></div>
+  </div>
+
+  <div id="matrix-panel">
+    <div style="font-weight: bold; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+      <span>HYDRO-BUS MATRIX</span>
+      <span style="color: #00ffcc; font-size: 10px;">128 SLOTS (Chunks 0 & 1)</span>
+    </div>
+    <div class="matrix-grid" id="matrixGrid"></div>
+    <div style="display: flex; justify-content: space-between; font-size: 9.5px; margin-top: 6px; color: #8899aa;">
+      <span><span style="color:#00ffcc;">■</span> Core 0-49</span>
+      <span><span style="color:#00ff66;">■</span> Pixel10 (50)</span>
+      <span><span style="color:#ff00aa;">■</span> Sub-Agents 64-95</span>
+      <span><span style="color:#131c2a;">■</span> Open</span>
+    </div>
+    <div id="slot-detail" style="margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(0,255,204,0.3); font-size: 10px; color: #fff;">
+      Hover or click a slot cell to inspect descriptor.
+    </div>
+  </div>
+
+  <div id="root-tooltip">
+    <div style="font-weight: bold; color: #ff00aa; font-size: 12px; margin-bottom: 2px;" id="tt-title">E8 Root Vector</div>
+    <div id="tt-coords" style="color: #fff; font-size: 11px;"></div>
+    <div id="tt-triplet" style="color: #00ffcc; font-size: 11px; margin-top: 2px;"></div>
+  </div>
+
+  <div id="node-anchor">
+    <strong>SOVEREIGN MANIFOLD V27</strong><br>
+    Missoula Baseline OK-15 | Z = 9.80665 m/s&sup2; | f<sub>floor</sub> = 36.0 Hz<br>
+    Controls: Left-Drag: Orbit | Scroll: Zoom | Right-Drag: Pan | Hover: Inspect E8
+  </div>
+
+  <div id="canvas-container">
+    <canvas id="topologyCanvas"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('topologyCanvas');
+    const ctx = canvas.getContext('2d');
+    const phaseChart = document.getElementById('phaseChart');
+    const phaseCtx = phaseChart.getContext('2d');
+    const magChart = document.getElementById('magChart');
+    const magCtx = magChart.getContext('2d');
+    const tooltip = document.getElementById('root-tooltip');
+
+    function resize() {
+      canvas.width = window.innerWidth || 1280;
+      canvas.height = window.innerHeight || 800;
+      phaseChart.width = 440; phaseChart.height = 38;
+      magChart.width = 440; magChart.height = 38;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // 1. Slot Definitions and Matrix Initialization
+    const slotNames = {
+      0: "L0_B3_PARTICLE_BRAID (Rust / Compute)",
+      1: "L0_B6_MASTER_BRAID (Rust / Compute)",
+      3: "L0_CONWAY_SLOANE_E8_DECODER (Rust / Compute)",
+      4: "L0_CUBECL_GPU_DISPATCH (Rust / Compute)",
+      10: "L1_WIN32_SHARED_PAGE_RING (C++23 / Memory)",
+      12: "L1_HOTSWAP_VTABLE_CONTROLLER (C++23 / Memory)",
+      20: "L2_STOMACHION_EXPLORATORY (Deno / Orchestration)",
+      21: "L2_STOMACHION_CONSTRUCTIVE (Deno / Orchestration)",
+      30: "VAULT_TIER1_PARTICLES (Rust / Storage)",
+      34: "VAULT_RABITQ_HNSW_INDEX (Rust / Storage)",
+      40: "TELEMETRY_4PHASE_RECOVERY (Rust / Telemetry)",
+      41: "TELEMETRY_MISSOULA_ANCHOR (Rust / Telemetry)",
+      50: "PIXEL10_TENSOR_G5_NPU (Android 17 / Edge Node)",
+      64: "SUBAGENT_ARXIV_QUANTUM_RECORDS (Deno / Research)",
+      72: "SUBAGENT_SHEAF_COHOMOLOGY_PROVER (Deno / Proof)",
+      80: "SUBAGENT_PIXEL10_TENSOR_G5_HOST (Deno / EdgeNPU)",
+      88: "SUBAGENT_SASSIFI_DREAM_WORKER (Deno / SelfHealing)"
+    };
+
+    const grid = document.getElementById('matrixGrid');
+    const slotDetail = document.getElementById('slot-detail');
+
+    for (let i = 0; i < 128; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'matrix-cell';
+      if (i < 50) cell.classList.add('cell-active');
+      else if (i === 50) cell.classList.add('cell-npu');
+      else if (i >= 64 && i < 96) cell.classList.add('cell-subagent');
+
+      cell.addEventListener('mouseenter', () => {
+        const desc = slotNames[i] || (i < 64 ? "Slot " + i + ": Active Subsystem Drop" : "Slot " + i + ": Dynamic Sub-Agent Channel");
+        slotDetail.innerHTML = "<strong>Slot " + i.toString().padStart(2, '0') + ":</strong> " + desc;
+      });
+      grid.appendChild(cell);
+    }
+
+    // 2. Interactive Orbit Camera Controls
+    let rotX = 0, rotY = 0, zoom = 1.0, panX = 0, panY = 0;
+    let isDragging = false, isPanning = false, lastMouseX = 0, lastMouseY = 0;
+    let mouseScreenX = 0, mouseScreenY = 0;
+
+    window.addEventListener('mousedown', (e) => {
+      if (e.target.closest('#hud-panel') || e.target.closest('#matrix-panel')) return;
+      if (e.button === 0) isDragging = true;
+      if (e.button === 2) isPanning = true;
+      lastMouseX = e.clientX; lastMouseY = e.clientY;
+    });
+    window.addEventListener('mousemove', (e) => {
+      const dx = e.clientX - lastMouseX; const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX; lastMouseY = e.clientY;
+      mouseScreenX = e.clientX; mouseScreenY = e.clientY;
+
+      if (isDragging) { rotX += dy * 0.006; rotY += dx * 0.006; }
+      if (isPanning) { panX += dx; panY += dy; }
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; isPanning = false; });
+    window.addEventListener('wheel', (e) => { zoom *= (e.deltaY > 0 ? 0.92 : 1.08); });
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // 3. WebSocket Real-Time Ingestion
+    let livePhaseDelta = 0.172590;
+    let liveDeltaMag = 0.0842;
+    const phaseHistory = new Array();
+    const magHistory = new Array();
+
+    function connectWebSocket() {
+      const host = window.location.host || 'localhost:8098';
+      const ws = new WebSocket("ws://" + host + "/ws");
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          livePhaseDelta = data.phaseDelta;
+
+          phaseHistory.push(data.phaseDelta);
+          if (phaseHistory.length > 70) phaseHistory.shift();
+
+          document.getElementById('val-epoch').textContent = data.epoch;
+          document.getElementById('val-phase').innerHTML = "&nu;<sub>p</sub> = " + data.phaseDelta.toFixed(6) + " rad";
+          document.getElementById('val-heat').textContent = data.landauerJoules.toFixed(4) + " J / 1.4411 J";
+          document.getElementById('val-b2').textContent = data.b2StaticRecordRate + " rec/s (" + (data.entropyNats || 9.34) + " nats/s)";
+
+          if (data.pixel10) {
+            liveDeltaMag = data.pixel10.deltaMagUt || 0.0842;
+            magHistory.push(liveDeltaMag);
+            if (magHistory.length > 70) magHistory.shift();
+
+            if (data.pixel10.computeLatencyUs) {
+              document.getElementById('val-npu-lat').textContent = data.pixel10.computeLatencyUs.toFixed(1) + " \u00B5s / batch (64 E8)";
+            }
+            if (data.pixel10.lifetimeTensors) {
+              document.getElementById('val-npu-total').textContent = data.pixel10.lifetimeTensors.toLocaleString() + " Tensors";
+            }
+
+            const b2Badge = data.pixel10.isB2Detected
+              ? '<span class="badge-void">[b2 VOID DETECTED]</span>'
+              : '<span class="badge-npu">[STABLE]</span>';
+            document.getElementById('val-pixel-mag').innerHTML = liveDeltaMag.toFixed(4) + " \u00B5T " + b2Badge;
+          }
+        } catch (_) {}
+      };
+      ws.onclose = () => setTimeout(connectWebSocket, 1000);
+    }
+    connectWebSocket();
+
+    // 4. Generate 240 E8 Root Lattice Coordinates (Safe No-Bracket Loop)
+    const roots = new Array();
+    const particleSectors = "Tier 1: Up Quark (u_L)|Tier 1: Down Quark (d_L)|Tier 1: Electron (e_L)|Tier 1: Neutrino (nu_e)|Tier 1: Charm Quark (c_L)|Tier 1: Strange Quark (s_L)|Tier 1: Muon Lepton (mu_L)|Tier 1: Top Quark (t_L)|Tier 1: Bottom Quark (b_L)|Tier 1: Tau Lepton (tau_L)|Tier 1: Gauge Photon (gamma)|Tier 1: W- Boson|Tier 1: Z0 Boson|Tier 1: Gluon Octet|Tier 1: Higgs Scalar (H0)|Tier 3: Santos 108° Rotation Tensor|Tier 3: Tangram Ingestion Triangle".split("|");
+
+    const signs = new Array(1, -1);
+    for (let i = 0; i < 8; i++) {
+      for (let j = i + 1; j < 8; j++) {
+        signs.forEach((s1) => {
+          signs.forEach((s2) => {
+            const r = new Array(0, 0, 0, 0, 0, 0, 0, 0);
+            r.splice(i, 1, s1);
+            r.splice(j, 1, s2);
+            const sectorName = particleSectors.at(roots.length % particleSectors.length);
+            roots.push({
+              vec: r,
+              name: sectorName,
+              triplet: "Triad: (\u03C3_" + (i+1) + "\u03C3_" + (j+1) + ", \u03BB^E8_" + (roots.length+1) + ", Q=" + (s1+s2) + ")",
+              screenX: 0, screenY: 0
+            });
+          });
+        });
+      }
+    }
+
+    // 5. 3D Render Loop
+    let autoRot = 0;
+    function render() {
+      ctx.fillStyle = '#06080e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cx = canvas.width / 2 + panX;
+      const cy = canvas.height / 2 + panY;
+      const scale = Math.min(canvas.width, canvas.height) * 0.28 * zoom;
+
+      autoRot += 0.003 + (livePhaseDelta * 0.004);
+      const curRotX = rotX;
+      const curRotY = rotY + autoRot;
+
+      const cosY = Math.cos(curRotY), sinY = Math.sin(curRotY);
+      const cosX = Math.cos(curRotX), sinX = Math.sin(curRotX);
+
+      let hoveredRoot = null;
+      let minHoverDist = 14;
+
+      ctx.strokeStyle = 'rgba(0, 255, 204, 0.22)';
+      ctx.fillStyle = '#00ffcc';
+
+      roots.forEach((rootObj, idx) => {
+        const r = rootObj.vec;
+        let x1 = r.at(0) * cosY - r.at(1) * sinY;
+        let z1 = r.at(0) * sinY + r.at(1) * cosY;
+        let y1 = r.at(2) * cosX - z1 * sinX;
+        let z2 = r.at(2) * sinX + z1 * cosX + 3.0;
+
+        const px = cx + (x1 / z2) * scale;
+        const py = cy + (y1 / z2) * scale;
+
+        rootObj.screenX = px; rootObj.screenY = py;
+
+        const dist = Math.hypot(px - mouseScreenX, py - mouseScreenY);
+        if (dist < minHoverDist) {
+          hoveredRoot = rootObj;
+          minHoverDist = dist;
+        }
+
+        ctx.beginPath();
+        ctx.arc(px, py, 2.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (idx % 3 === 0 && idx + 1 < roots.length) {
+          const nr = roots.at(idx + 1).vec;
+          let nx1 = nr.at(0) * cosY - nr.at(1) * sinY;
+          let nz1 = nr.at(0) * sinY + nr.at(1) * cosY;
+          let ny1 = nr.at(2) * cosX - nz1 * sinX;
+          let nz2 = nr.at(2) * sinX + nz1 * cosX + 3.0;
+
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(cx + (nx1 / nz2) * scale, cy + (ny1 / nz2) * scale);
+          ctx.stroke();
+        }
+      });
+
+      if (hoveredRoot) {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (hoveredRoot.screenX + 16) + "px";
+        tooltip.style.top = (hoveredRoot.screenY - 20) + "px";
+        document.getElementById('tt-title').textContent = hoveredRoot.name;
+        document.getElementById('tt-coords').textContent = "8D Vector: (" + hoveredRoot.vec.join(", ") + ")";
+        document.getElementById('tt-triplet').textContent = hoveredRoot.triplet;
+
+        ctx.strokeStyle = '#ff00aa';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(hoveredRoot.screenX, hoveredRoot.screenY, 7, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        tooltip.style.display = 'none';
+      }
+
+      ctx.strokeStyle = '#ff00aa';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let t = 0; t < 220; t++) {
+        const theta = t * 0.05 + curRotY * 2 + livePhaseDelta;
+        const bx = cx + Math.sin(theta) * 140 * zoom;
+        const by = cy - 110 + t * 1.5;
+        if (t === 0) ctx.moveTo(bx, by); else ctx.lineTo(bx, by);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = '#00aaff';
+      ctx.beginPath();
+      for (let t = 0; t < 220; t++) {
+        const theta = t * 0.05 + curRotY * 2 + Math.PI + livePhaseDelta;
+        const bx = cx + Math.sin(theta) * 140 * zoom;
+        const by = cy - 110 + t * 1.5;
+        if (t === 0) ctx.moveTo(bx, by); else ctx.lineTo(bx, by);
+      }
+      ctx.stroke();
+
+      phaseCtx.clearRect(0, 0, phaseChart.width, phaseChart.height);
+      phaseCtx.strokeStyle = '#00ffcc';
+      phaseCtx.lineWidth = 1.5;
+      phaseCtx.beginPath();
+      phaseHistory.forEach((val, idx) => {
+        const x = (idx / 70) * phaseChart.width;
+        const y = phaseChart.height - ((val - 0.16) / 0.03) * phaseChart.height;
+        if (idx === 0) phaseCtx.moveTo(x, y); else phaseCtx.lineTo(x, y);
+      });
+      phaseCtx.stroke();
+
+      magCtx.clearRect(0, 0, magChart.width, magChart.height);
+      const threshY = magChart.height - (0.053 / 0.20) * magChart.height;
+      magCtx.strokeStyle = 'rgba(255, 0, 170, 0.5)';
+      magCtx.setLineDash(new Array(4, 4));
+      magCtx.beginPath();
+      magCtx.moveTo(0, threshY); magCtx.lineTo(magChart.width, threshY);
+      magCtx.stroke();
+      magCtx.setLineDash(new Array());
+
+      magCtx.strokeStyle = '#00ff66';
+      magCtx.lineWidth = 1.5;
+      magCtx.beginPath();
+      magHistory.forEach((val, idx) => {
+        const x = (idx / 70) * magChart.width;
+        const y = magChart.height - (val / 0.20) * magChart.height;
+        if (idx === 0) magCtx.moveTo(x, y); else magCtx.lineTo(x, y);
+      });
+      magCtx.stroke();
+
+      requestAnimationFrame(render);
+    }
+    render();
+  </script>
+</body>
+</html>

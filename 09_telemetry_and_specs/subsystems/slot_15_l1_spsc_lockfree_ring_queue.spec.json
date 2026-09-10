@@ -1,0 +1,13 @@
+{
+  "slot_id": 15,
+  "module_name": "L1_SPSC_LOCKFREE_RING_QUEUE",
+  "language": "C++23",
+  "category": "Memory",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

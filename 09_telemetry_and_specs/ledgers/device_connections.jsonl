@@ -1,0 +1,3 @@
+﻿{"timestamp":"2026-08-29T20:42:04.361Z","event":"PEER_ENROLLMENT_SUCCESS","device_hash":"0xa8f3b29c01d4e765","device_alias":"Pixel-10-Edge-Node","assigned_slot":50,"transport":"TIER_1_DIRECT_QUIC","status":"ENROLLED_AND_ACTIVE"}
+{"timestamp":"2026-08-29T20:52:48.367Z","event":"PEER_PAIR_SUCCESS","device":"Google-Pixel-10","slot":50,"rtt_us":210,"transport":"TIER_1_DIRECT_QUIC","npu_target":"Tensor-G5","status":"ONLINE"}
+{"timestamp":"2026-08-29T20:52:48.367Z","event":"PEER_PAIR_SUCCESS","device":"Google-Pixel-8","slot":51,"rtt_us":340,"transport":"TIER_1_DIRECT_QUIC","npu_target":"Tensor-G3","status":"ONLINE"}

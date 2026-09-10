@@ -1,0 +1,14 @@
+{
+  "slot_id": 87,
+  "module_name": "SUBAGENT_OUT_OF_BAND_BLE_SYNC",
+  "chunk": 1,
+  "category": "EdgeNPU",
+  "role": "BLE GATT / QR Optical Rendezvous",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

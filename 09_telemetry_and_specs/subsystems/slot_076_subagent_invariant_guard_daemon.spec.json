@@ -1,0 +1,14 @@
+{
+  "slot_id": 76,
+  "module_name": "SUBAGENT_INVARIANT_GUARD_DAEMON",
+  "chunk": 1,
+  "category": "Proof",
+  "role": "Phase Delta Clamp",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}

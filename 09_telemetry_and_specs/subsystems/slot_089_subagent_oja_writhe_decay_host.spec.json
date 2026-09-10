@@ -1,0 +1,14 @@
+{
+  "slot_id": 89,
+  "module_name": "SUBAGENT_OJA_WRITHE_DECAY_HOST",
+  "chunk": 1,
+  "category": "SelfHealing",
+  "role": "Charge Dissipation Host",
+  "invariants": {
+    "parity_lock": 1.000000,
+    "max_phase_delta": 0.40,
+    "landauer_joules_max": 1.4411,
+    "sheaf_cohomology": "H1(U, F) == 0"
+  },
+  "status": "BOUND_AND_ACTIVE"
+}
