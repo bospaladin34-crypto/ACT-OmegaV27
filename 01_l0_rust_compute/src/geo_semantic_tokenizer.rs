@@ -1,5 +1,6 @@
 // geo_semantic_tokenizer.rs - Revision Omega.1
-// Enforces Zero Square Bracket Invariant across entire module
+// Complete Non-Dualistic Cymatic Embedding Engine
+// Enforces Zero Square Bracket Invariant across all lines
 
 use std::string::String;
 
@@ -449,17 +450,77 @@ impl GeoSemanticTokenizer {
         tokens
     }
 
-    pub fn embed(&self, _token: &RawToken) -> GeometricEmbedding {
-        let mut c = Vec::new();
-        let mut i = 0;
-        while i < self.proj.cols {
-            c.push(0.0);
-            i = i + 1;
+    pub fn embed(&self, token: &RawToken) -> GeometricEmbedding {
+        let phi = 1.61803398875f32;
+        let ang_91 = 1.5882496f32;
+        let ang_108 = 1.8849556f32;
+
+        let mut gem_sum = 0u32;
+        for b in token.text.bytes() {
+            gem_sum = gem_sum + (b as u32);
         }
+        let root_idx = ((gem_sum % 240) as u16);
+
+        let mut c = Vec::new();
+        let mut col = 0;
+        while col < self.proj.cols {
+            c.push(0.0f32);
+            col = col + 1;
+        }
+
+        let mut char_idx = 0usize;
+        for b in token.text.bytes() {
+            let val = b as f32;
+            let theta = (char_idx as f32) * ang_91 + ((gem_sum % 7) as f32) * ang_108;
+            let pol = ((char_idx as f32) * phi).sin() * (val * 0.1).cos();
+            let k = char_idx % self.proj.cols;
+            let k_next = (char_idx + 1) % self.proj.cols;
+
+            let contrib_cos = pol * theta.cos() * val.sqrt();
+            let contrib_sin = pol * theta.sin() * val.sqrt();
+
+            if let Some(elem) = c.get_mut(k) {
+                *elem = *elem + contrib_cos;
+            }
+            if let Some(elem_next) = c.get_mut(k_next) {
+                *elem_next = *elem_next + contrib_sin;
+            }
+            char_idx = char_idx + 1;
+        }
+
+        let mut sum_sq = 0.0f32;
+        let mut idx = 0;
+        while idx < c.len() {
+            if let Some(v) = c.get(idx) {
+                sum_sq = sum_sq + (*v) * (*v);
+            }
+            idx = idx + 1;
+        }
+        let norm = sum_sq.sqrt();
+        let scale = if norm > 0.00001 { 1.0 / norm } else { 1.0 };
+
+        let mut normalized_coords = Vec::new();
+        idx = 0;
+        while idx < c.len() {
+            if let Some(v) = c.get(idx) {
+                normalized_coords.push((*v) * scale);
+            }
+            idx = idx + 1;
+        }
+
+        let role = ((gem_sum % 3) + 1) as u8;
+        let color = ((gem_sum % 8) + 1) as u8;
+
         GeometricEmbedding {
-            coords: c,
+            coords: normalized_coords,
             norm: 1.0,
-            symbolic: SymbolicTagSet::default(),
+            symbolic: SymbolicTagSet {
+                e8_root_index: Some(root_idx),
+                color_charge: Some(color),
+                decay_state: Some(0),
+                role_tag: Some(role),
+                channel_id: Some(1),
+            },
         }
     }
 
@@ -480,11 +541,12 @@ impl GeoSemanticTokenizer {
                 let emb = self.embed(raw);
                 let proj = self.project(&emb);
                 let root = self.snap(&proj, &emb.symbolic, mode);
+                let compat = score_geometric(&proj, &root);
                 out.push(SnappedToken {
                     raw: raw.clone(),
                     embedding: emb,
                     root,
-                    compatibility_score: 1.0,
+                    compatibility_score: compat,
                 });
             }
             i = i + 1;
