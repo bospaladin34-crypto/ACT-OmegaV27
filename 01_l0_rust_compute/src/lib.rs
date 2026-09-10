@@ -28,3 +28,5 @@ pub fn verify_system_invariants() -> bool {
     parity_valid && phase_valid
 }
 pub mod eja_coprocessor;
+
+pub mod geo_semantic_tokenizer;
