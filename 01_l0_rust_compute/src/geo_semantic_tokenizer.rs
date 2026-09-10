@@ -459,7 +459,7 @@ impl GeoSemanticTokenizer {
         for b in token.text.bytes() {
             gem_sum = gem_sum + (b as u32);
         }
-        let root_idx = ((gem_sum % 240) as u16);
+        let root_idx = (gem_sum % 240) as u16;
 
         let mut c = Vec::new();
         let mut col = 0;
