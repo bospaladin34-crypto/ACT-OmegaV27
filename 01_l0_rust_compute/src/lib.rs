@@ -30,3 +30,5 @@ pub fn verify_system_invariants() -> bool {
 pub mod eja_coprocessor;
 
 pub mod geo_semantic_tokenizer;
+
+pub mod braid_attention;
