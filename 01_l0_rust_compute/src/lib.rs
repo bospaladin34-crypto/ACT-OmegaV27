@@ -36,3 +36,5 @@ pub mod braid_attention;
 pub mod knot_splicer;
 
 pub mod truth_collapse_gate;
+
+pub mod cognitive_pain_governor;
