@@ -34,3 +34,5 @@ pub mod geo_semantic_tokenizer;
 pub mod braid_attention;
 
 pub mod knot_splicer;
+
+pub mod truth_collapse_gate;
