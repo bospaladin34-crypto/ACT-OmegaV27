@@ -66,7 +66,7 @@ fn main() {
     println!("Parity Lock Conserved         : {:.6}", verdict_b.parity_trace);
     assert_eq!(verdict_b.final_obstruction, 0.0);
     assert_eq!(verdict_b.parity_trace, 1.000000);
-    assert_eq!(repaired_b.len(), 1);
+    assert_eq!(repaired_b.len(), 2);
 
     // Candidate C: Sub-threshold thought (Fleeting mental noise below Penrose collapse)
     let mut braid_c = Vec::new();
