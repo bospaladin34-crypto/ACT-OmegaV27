@@ -32,3 +32,5 @@ pub mod eja_coprocessor;
 pub mod geo_semantic_tokenizer;
 
 pub mod braid_attention;
+
+pub mod knot_splicer;
