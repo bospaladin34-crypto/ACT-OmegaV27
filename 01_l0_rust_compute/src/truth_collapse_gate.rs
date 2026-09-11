@@ -1,8 +1,6 @@
 // truth_collapse_gate.rs - Task 35 E-J-A Abductive Truth & Collapse Gate
 // Enforces Zero Square Bracket Invariant across entire module
 
-use std::vec::Vec;
-use std::string::String;
 
 pub struct EpistemicTruthGate {
     pub reduced_planck_constant: f64,

@@ -1,7 +1,6 @@
 // knot_splicer.rs - Task 32 Autonomous Topological Sheaf Repair & Knot Splicer
 // Enforces Zero Square Bracket Invariant across entire module
 
-use std::vec::Vec;
 
 pub struct KnotSurgeryEngine {
     pub max_iterations: usize,
