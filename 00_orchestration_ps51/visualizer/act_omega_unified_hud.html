@@ -215,6 +215,27 @@
     <!-- PAGE 6: SMARTPHONE & PAIRING -->
     <div id="page-pair" class="page-view">
       <div class="pair-container">
+        <!-- ADB USB Hardware Bridge Card -->
+        <div class="pair-card" style="border-color: #0284c7;">
+          <div style="font-weight: bold; color: #38bdf8; font-size: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <span>ADB USB 3.2 HARDWARE BRIDGE</span>
+            <span id="adb-badge" style="font-size: 0.75rem; background: #064e3b; color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 0.3rem;">CHECKING...</span>
+          </div>
+          <p style="font-size: 0.82rem; color: #94a3b8;">Direct hardware telemetry stream over physical USB cable (Zero network dependencies, no Wi-Fi/Bluetooth required):</p>
+          
+          <div style="background: #111827; border: 1px solid #1f2937; border-radius: 0.5rem; padding: 1rem;">
+            <div class="metric-row"><span>Pixel 10 Status</span><span id="adb-dev-status" style="font-weight:bold; color:#4ade80;">--</span></div>
+            <div class="metric-row"><span>Live Battery Voltage</span><span id="adb-voltage" style="color:#facc15; font-weight:bold;">-- mV</span></div>
+            <div class="metric-row"><span>Hardware Thermals</span><span id="adb-temp" style="color:#38bdf8; font-weight:bold;">-- &deg;C</span></div>
+            <div class="metric-row"><span>Battery Level</span><span id="adb-level">-- %</span></div>
+            <div class="metric-row"><span>Charging State</span><span id="adb-charge">--</span></div>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn-action" style="flex:1; background:#0284c7;" onclick="latchAdbReverse()">LATCH REVERSE PORT</button>
+            <button class="btn-action" style="flex:1; background:#10b981;" onclick="pullAdbLedger()">PULL FIELD LEDGER</button>
+          </div>
+        </div>
         
         <!-- QR Code Latch Card -->
         <div class="pair-card">
@@ -473,6 +494,42 @@
         hist.appendChild(replyDiv);
         hist.scrollTop = hist.scrollHeight;
       }, 350);
+    }
+    // Poll ADB Telemetry Every 1.5s
+    async function pollAdbHardware() {
+      try {
+        const res = await fetch("/api/adb/battery");
+        const data = await res.json();
+        if (data.voltage) {
+          document.getElementById("adb-badge").innerText = "ONLINE (USB 3.2)";
+          document.getElementById("adb-badge").style.background = "#064e3b";
+          document.getElementById("adb-badge").style.color = "#6ee7b7";
+          document.getElementById("adb-dev-status").innerText = "Pixel 10 [Tensor G5]";
+          document.getElementById("adb-voltage").innerText = data.voltage + " mV";
+          document.getElementById("adb-temp").innerText = (parseFloat(data.temperature) / 10).toFixed(1) + " °C";
+          document.getElementById("adb-level").innerText = data.level + " %";
+          document.getElementById("adb-charge").innerText = data["USB powered"] === "true" ? "USB Fast-Charging" : "Discharging";
+          document.getElementById("hdr-ingress").innerText = "USB 3.2 ADB Active";
+          document.getElementById("hdr-ingress").style.color = "#4ade80";
+        }
+      } catch (_) {}
+    }
+    setInterval(pollAdbHardware, 1500);
+
+    async function latchAdbReverse() {
+      try {
+        const res = await fetch("/api/adb/reverse", { method: "POST" });
+        const data = await res.json();
+        alert(data.success ? "ADB Reverse Port Latch Active (tcp:8098)" : "Error: " + data.error);
+      } catch (e) { alert("Server bridge offline. Run Start-CockpitServer.ps1 first."); }
+    }
+
+    async function pullAdbLedger() {
+      try {
+        const res = await fetch("/api/adb/pull", { method: "POST" });
+        const data = await res.json();
+        alert(data.success ? "Successfully pulled field ledger to PC!" : "Error: " + data.error);
+      } catch (e) { alert("Server bridge offline. Run Start-CockpitServer.ps1 first."); }
     }
   </script>
 </body>
