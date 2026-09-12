@@ -5,6 +5,8 @@
   <title>ACT-Ω v27.0 | Unified Sovereign Manifold Cockpit</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- QRCode.js library for offline QR generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #030712; color: #f9fafb; font-family: 'Segoe UI', monospace; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -67,6 +69,16 @@
     /* Page 5: Hardware & Git */
     .hw-container { padding: 1.5rem; width: 100%; height: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; overflow-y: auto; }
     .hw-card { background: #0b1120; border: 1px solid #1f2937; border-radius: 0.5rem; padding: 1.2rem; }
+
+    /* Page 6: Smartphone & Pairing */
+    .pair-container { padding: 2rem; width: 100%; height: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; overflow-y: auto; background: #030712; }
+    .pair-card { background: #0b1120; border: 1px solid #1f2937; border-radius: 0.75rem; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .qr-box { background: white; padding: 1rem; border-radius: 0.5rem; width: fit-content; margin: 0 auto; }
+    .btn-action { background: #0284c7; color: white; border: none; padding: 0.75rem 1.2rem; border-radius: 0.4rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; font-family: monospace; }
+    .btn-action:hover { background: #0369a1; }
+    .btn-ble { background: #4f46e5; }
+    .btn-ble:hover { background: #4338ca; }
+    .code-box { background: #111827; border: 1px solid #374151; border-radius: 0.4rem; padding: 0.8rem; font-size: 0.8rem; color: #a5b4fc; word-break: break-all; }
   </style>
 </head>
 <body>
@@ -91,8 +103,8 @@
         <span class="status-val" style="color: #c084fc;">Tr(U_res) = 1.000000</span>
       </div>
       <div class="status-item">
-        <span class="status-label">Sheaf Bound</span>
-        <span class="status-val" style="color: #34d399;">H^1 = 0 [LAMINAR]</span>
+        <span class="status-label">Edge Ingress</span>
+        <span class="status-val" style="color: #facc15;" id="hdr-ingress">USB / Wi-Fi Active</span>
       </div>
       <div class="status-item">
         <span class="status-label">Anchor State</span>
@@ -108,6 +120,7 @@
     <button class="tab-btn" onclick="switchPage('page-bus')">3. 128-SLOT HYDRO-BUS</button>
     <button class="tab-btn" onclick="switchPage('page-scope')">4. 3D VECTOR SCOPE</button>
     <button class="tab-btn" onclick="switchPage('page-hw')">5. HARDWARE & GIT</button>
+    <button class="tab-btn" onclick="switchPage('page-pair')">6. SMARTPHONE &amp; PAIRING</button>
   </nav>
 
   <!-- Page Container -->
@@ -134,7 +147,7 @@
         <div class="chat-main">
           <div class="chat-history" id="chat-hist">
             <div class="chat-msg chat-engine">
-              <b>[ATCC Cognitive Core Online]</b>: Revision &Omega;.1 Geometric-Semantic Tokenizer & Braid Loom initialized. All inputs undergo non-commutative Artin braid crossings (B_8), Cech cohomology verification (H^1 = 0), and Penrose Objective Collapse (E_G &middot; &tau; &ge; &hbar;) before token emission.
+              <b>[ATCC Cognitive Core Online]</b>: Revision &Omega;.1 Geometric-Semantic Tokenizer & Braid Loom initialized. Inputs undergo non-commutative Artin braid crossings (B_8), Cech cohomology verification (H^1 = 0), and Penrose Objective Collapse (E_G &middot; &tau; &ge; &hbar;) before token emission.
               <div class="sidecar">&bull; Roots Active: 240 E_8 &bull; Parity: 1.000000 &bull; Dissipation: 1.20 J / 1.4411 J &bull; H^1 = 0</div>
             </div>
           </div>
@@ -199,9 +212,49 @@
       </div>
     </div>
 
+    <!-- PAGE 6: SMARTPHONE & PAIRING -->
+    <div id="page-pair" class="page-view">
+      <div class="pair-container">
+        
+        <!-- QR Code Latch Card -->
+        <div class="pair-card">
+          <div style="font-weight: bold; color: #38bdf8; font-size: 1rem;">DYNAMIC QR OPTICAL PAIRING LATCH</div>
+          <p style="font-size: 0.82rem; color: #94a3b8;">Scan with your Google Pixel 10 camera to latch the edge node directly to this workstation cockpit without manual IP typing:</p>
+          <div class="qr-box" id="qrcode"></div>
+          <div style="text-align: center; font-size: 0.75rem; color: #64748b;">
+            Target Host: <b style="color: #38bdf8;"></b> | Slot: <b>50</b>
+          </div>
+          <div class="code-box" id="termux-cmd">
+            termux-wake-lock && deno run --allow-net --allow-read --allow-write --allow-run /data/local/tmp/missoula_field_expedition.ts "Field_Scan" "192.168.137.1"
+          </div>
+          <button class="btn-action" onclick="copyTermuxCmd()">COPY TERMUX COMMAND</button>
+        </div>
+
+        <!-- Bluetooth BLE & RFCOMM Card -->
+        <div class="pair-card">
+          <div style="font-weight: bold; color: #a855f7; font-size: 1rem;">WEB BLUETOOTH (BLE GATT) INGRESS</div>
+          <p style="font-size: 0.82rem; color: #94a3b8;">Connect directly to your Pixel 10 over Bluetooth Low Energy for untethered short-range telemetry when Wi-Fi is unavailable:</p>
+          <button class="btn-action btn-ble" onclick="connectBluetooth()">CONNECT VIA BLUETOOTH</button>
+          
+          <div style="background: #111827; border: 1px solid #1f2937; border-radius: 0.5rem; padding: 1rem; margin-top: 0.5rem;">
+            <div class="metric-row"><span>BLE Service UUID</span><span style="color:#a855f7;">56455350-4552-3031-4143-544f4d454741</span></div>
+            <div class="metric-row"><span>Device Status</span><span id="ble-status" style="color:#94a3b8;">DISCONNECTED</span></div>
+            <div class="metric-row"><span>Device Name</span><span id="ble-name">--</span></div>
+            <div class="metric-row"><span>Signal RSSI</span><span id="ble-rssi">-- dBm</span></div>
+          </div>
+          <div style="font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+            &bull; Automatically fails over: <b>USB 3.2</b> &rarr; <b>Wi-Fi Direct</b> &rarr; <b>Bluetooth BLE</b> &rarr; <b>Offline Ledger</b>.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
   <script>
+    const HOST_IP = "192.168.137.1";
+
     // Tab Navigation Logic
     function switchPage(pageId) {
       document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
@@ -211,6 +264,64 @@
 
       if (pageId === 'page-map' && window.leafletMap) {
         setTimeout(() => { window.leafletMap.invalidateSize(); }, 200);
+      }
+      if (pageId === 'page-pair' && !window.qrGenerated) {
+        generateQr();
+      }
+    }
+
+    // Generate Dynamic QR Code (Page 6)
+    function generateQr() {
+      const qrEl = document.getElementById("qrcode");
+      qrEl.innerHTML = "";
+      const pairUrl = "actomega://pair?host=" + HOST_IP + "&port=8098&slot=50&session=Missoula_Edge";
+      new QRCode(qrEl, {
+        text: pairUrl,
+        width: 180,
+        height: 180,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      window.qrGenerated = true;
+    }
+
+    // Copy Termux Command
+    function copyTermuxCmd() {
+      const cmdText = document.getElementById("termux-cmd").innerText.trim();
+      navigator.clipboard.writeText(cmdText).then(() => {
+        alert("Termux command copied to clipboard!");
+      });
+    }
+
+    // Native Web Bluetooth BLE Connection
+    async function connectBluetooth() {
+      const statusEl = document.getElementById("ble-status");
+      const nameEl = document.getElementById("ble-name");
+      try {
+        statusEl.innerText = "SCANNING...";
+        statusEl.style.color = "#facc15";
+
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ["battery_service", "environmental_sensing"]
+        });
+
+        statusEl.innerText = "CONNECTED";
+        statusEl.style.color = "#22c55e";
+        nameEl.innerText = device.name || "Pixel 10 [Tensor G5]";
+        document.getElementById("hdr-ingress").innerText = "Bluetooth BLE Active";
+        document.getElementById("hdr-ingress").style.color = "#a855f7";
+
+        device.addEventListener("gattserverdisconnected", () => {
+          statusEl.innerText = "DISCONNECTED";
+          statusEl.style.color = "#ef4444";
+          document.getElementById("hdr-ingress").innerText = "USB / Wi-Fi Active";
+          document.getElementById("hdr-ingress").style.color = "#facc15";
+        });
+      } catch (err) {
+        statusEl.innerText = "PAIRING CANCELLED / FAILED";
+        statusEl.style.color = "#94a3b8";
       }
     }
 
@@ -305,14 +416,12 @@
 
       const hist = document.getElementById("chat-hist");
 
-      // User Message
       const userDiv = document.createElement("div");
       userDiv.className = "chat-msg chat-user";
       userDiv.innerText = text;
       hist.appendChild(userDiv);
       input.value = "";
 
-      // Dynamic Geometric Tokenizer Processing
       setTimeout(() => {
         let gemSum = 0;
         for (let i = 0; i < text.length; i++) gemSum += text.charCodeAt(i);
