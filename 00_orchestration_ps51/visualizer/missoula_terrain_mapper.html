@@ -8,27 +8,113 @@
   <style>
     body { margin: 0; background: #030712; color: #f9fafb; font-family: monospace; }
     #map { height: 100vh; width: 100vw; }
-    .hud-card { position: absolute; top: 1rem; right: 1rem; z-index: 1000; background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 1rem; width: 320px; }
-    .metric { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.8rem; }
+    .hud-card { position: absolute; top: 1rem; right: 1rem; z-index: 1000; background: rgba(15,23,42,0.94); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 0.5rem; padding: 1rem; width: 340px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+    .title { font-weight: bold; color: #4ade80; margin-bottom: 0.6rem; font-size: 0.95rem; letter-spacing: 0.05em; }
+    .metric { display: flex; justify-content: space-between; margin-bottom: 0.35rem; font-size: 0.8rem; }
     .metric-val { font-weight: bold; color: #38bdf8; }
+    .legend { margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <div class="hud-card">
-    <div style="font-weight: bold; color: #4ade80; margin-bottom: 0.5rem;">MISSOULA GEOLOGICAL TERRAIN MAPPER</div>
-    <div class="metric"><span>Anchor Baseline</span><span class="metric-val">B_tor: -41.84 µT</span></div>
-    <div class="metric"><span>Elevation Ground State</span><span class="metric-val">905.20 hPa / 959m</span></div>
-    <div class="metric"><span>b2 Cavities Encountered</span><span class="metric-val" id="b2-count" style="color: #ef4444;">--</span></div>
+    <div class="title">MISSOULA GEOLOGICAL TERRAIN MAPPER</div>
+    <div class="metric"><span>Session</span><span class="metric-val" id="session-name">ClarkFork_BeltGravels_01</span></div>
+    <div class="metric"><span>Anchor State</span><span class="metric-val">B_tor: -41.84 &mu;T</span></div>
+    <div class="metric"><span>Elevation Ground</span><span class="metric-val">905.20 hPa / 959m</span></div>
+    <div class="metric"><span>Current Pressure</span><span class="metric-val" id="avg-pressure" style="color: #facc15;">904.1 hPa</span></div>
+    <div class="metric"><span>b2 Cavity Hotspots</span><span class="metric-val" id="b2-count" style="color: #ef4444;">--</span></div>
     <div class="metric"><span>b3 Pressure Cavities</span><span class="metric-val" id="b3-count" style="color: #06b6d4;">--</span></div>
     <div class="metric"><span>Homological Ratio</span><span class="metric-val" id="rhom-val" style="color: #c084fc;">13.34x</span></div>
+    <div class="legend">
+      <div><span style="color: #ef4444;">●</span> b2 Void Cavity (|&Delta;B| > 0.053 &mu;T)</div>
+      <div><span style="color: #06b6d4;">●</span> b3 Pressure Cavity (|&Delta;P| > 0.05 hPa)</div>
+      <div><span style="color: #22c55e;">●</span> Stable Terrestrial Baseline</div>
+    </div>
   </div>
-  <script>
-    const map = L.map("map").setView([46.8721, -113.9940], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
 
-    // Anchor Marker (Missoula Base)
-    L.circleMarker([46.8721, -113.9940], { color: "#38bdf8", radius: 8, fillOpacity: 0.8 }).bindPopup("Missoula Base Anchor").addTo(map);
+  <script>
+    const rawTelemetry = [{"event":"NPU_SLOT_FRAME","session":"ClarkFork_BeltGravels_01","slot":50,"epoch":5060004,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.0812,"deltaPressureHpa":0.02,"currentPressureHpa":904.07,"gps":{"lat":46.898193,"lon":-114.041620,"alt":959.0},"isB2VoidDetected":true,"isB3VoidDetected":false,"timestamp":"2026-09-11T22:23:54Z"},{"event":"NPU_SLOT_FRAME","session":"ClarkFork_BeltGravels_01","slot":50,"epoch":5060012,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.0315,"deltaPressureHpa":0.01,"currentPressureHpa":904.10,"gps":{"lat":46.898210,"lon":-114.041640,"alt":959.2},"isB2VoidDetected":false,"isB3VoidDetected":false,"timestamp":"2026-09-11T22:24:02Z"},{"event":"NPU_SLOT_FRAME","session":"ClarkFork_BeltGravels_01","slot":50,"epoch":5060032,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":7.42,"rHom":13.09,"deltaMagUt":0.0920,"deltaPressureHpa":0.08,"currentPressureHpa":904.30,"gps":{"lat":46.898245,"lon":-114.041680,"alt":959.5},"isB2VoidDetected":true,"isB3VoidDetected":true,"timestamp":"2026-09-11T22:24:22Z"},{"event":"NPU_SLOT_FRAME","session":"ClarkFork_BeltGravels_01","slot":50,"epoch":5060064,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.0760,"deltaPressureHpa":0.02,"currentPressureHpa":904.40,"gps":{"lat":46.898290,"lon":-114.041720,"alt":959.8},"isB2VoidDetected":true,"isB3VoidDetected":false,"timestamp":"2026-09-11T22:24:54Z"}];
+    const startLat = rawTelemetry[0]?.gps?.lat || 46.898193;
+    const startLon = rawTelemetry[0]?.gps?.lon || -114.041620;
+
+    const map = L.map("map").setView([startLat, startLon], 16);
+
+    // CartoDB Dark Matter tile provider (Free, dark mode, no 403 block on file://)
+        // 100% Free Scientific Map Layers (Zero API Key Required)
+    const esriDark = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 16,
+      attribution: "Tiles &copy; Esri"
+    });
+
+    const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "Tiles &copy; Esri &mdash; National Geographic, USGS"
+    });
+
+    const esriSatellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "Tiles &copy; Esri, Earthstar Geographics"
+    });
+
+    // Default to Topographic map for geological terrain
+    esriTopo.addTo(map);
+
+    // Add Layer Control Switcher (Top-Left)
+    L.control.layers({
+      "Topographic Terrain": esriTopo,
+      "High-Res Satellite": esriSatellite,
+      "Dark Canvas": esriDark
+    }, null, { position: "topleft" }).addTo(map);
+
+    let b2Total = 0;
+    let b3Total = 0;
+    let pSum = 0;
+    const latLngs = [];
+
+    rawTelemetry.forEach((f, idx) => {
+      const lat = f.gps?.lat || startLat;
+      const lon = f.gps?.lon || startLon;
+      latLngs.push([lat, lon]);
+      pSum += (f.currentPressureHpa || 904.1);
+
+      let markerColor = "#22c55e";
+      let radius = 6;
+
+      if (f.isB2VoidDetected) {
+        b2Total++;
+        markerColor = "#ef4444";
+        radius = 8;
+      }
+      if (f.isB3VoidDetected) {
+        b3Total++;
+        markerColor = "#06b6d4";
+        radius = 11;
+      }
+
+      const marker = L.circleMarker([lat, lon], {
+        color: markerColor,
+        radius: radius,
+        fillOpacity: 0.8
+      }).addTo(map);
+
+      marker.bindPopup(
+        "<b>Step:</b> " + f.epoch + "<br/>" +
+        "<b>Pressure:</b> " + f.currentPressureHpa + " hPa<br/>" +
+        "<b>&Delta;B:</b> " + f.deltaMagUt + " &mu;T<br/>" +
+        "<b>R_hom:</b> " + f.rHom + "x<br/>" +
+        "<b>Time:</b> " + f.timestamp
+      );
+    });
+
+    if (latLngs.length > 1) {
+      L.polyline(latLngs, { color: "#38bdf8", weight: 3, opacity: 0.85 }).addTo(map);
+    }
+
+    document.getElementById("avg-pressure").innerText = (pSum / rawTelemetry.length).toFixed(1) + " hPa";
+    document.getElementById("b2-count").innerText = b2Total;
+    document.getElementById("b3-count").innerText = b3Total;
+    document.getElementById("rhom-val").innerText = (rawTelemetry[rawTelemetry.length - 1]?.rHom || 13.34) + "x";
   </script>
 </body>
 </html>

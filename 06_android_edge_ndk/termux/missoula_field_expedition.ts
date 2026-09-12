@@ -7,7 +7,7 @@ const WIFI_URL = `ws://${LAN_HOST_IP}:8098/ws`;
 const SESSION_NAME = Deno.args.at(0) || "Missoula_Field_Survey";
 
 const LIB_PATH = "./libvesper_ffi.so";
-const FIELD_LOG_PATH = "/data/local/tmp/missoula_field_expedition.jsonl";
+const FIELD_LOG_PATH = "/sdcard/Download/missoula_field_expedition.jsonl";
 const PIXEL10_DEVICE_HASH = "0xa8f3b29c01d4e765";
 const ASSIGNED_SLOT = 50;
 const REGIME_ID = 4;
