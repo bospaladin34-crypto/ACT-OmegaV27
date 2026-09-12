@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ACT-Ω | Mobile Edge Node</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace; }
+    body { background: #030712; color: #f9fafb; padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem; }
+    .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 0.75rem; padding: 1.2rem; }
+    .title { font-weight: bold; color: #38bdf8; font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .pulse { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
+    .metric { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.85rem; }
+    .metric-val { font-weight: bold; color: #4ade80; }
+    .btn { background: #0284c7; color: white; border: none; padding: 0.8rem; border-radius: 0.5rem; font-weight: bold; width: 100%; cursor: pointer; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title"><div class="pulse"></div>ACT-Ω EDGE NODE: PIXEL 10</div>
+    <div class="metric"><span>Host Ingress</span><span class="metric-val"></span></div>
+    <div class="metric"><span>Assigned Slot</span><span class="metric-val">Slot 50 (NPU)</span></div>
+    <div class="metric"><span>Socket Status</span><span class="metric-val" id="ws-status">CONNECTING...</span></div>
+    <div class="metric"><span>Carrier Clock</span><span class="metric-val">15.965 Hz</span></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight: bold; color: #c084fc; margin-bottom: 0.5rem;">LIVE SENSOR INGRESS</div>
+    <div class="metric"><span>Motion (&alpha;, &beta;, &gamma;)</span><span class="metric-val" id="orient-val">--</span></div>
+    <div class="metric"><span>Linear Accel</span><span class="metric-val" id="accel-val">--</span></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight: bold; color: #facc15; margin-bottom: 0.5rem;">BACKGROUND TERMUX EXECUTION</div>
+    <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.8rem;">To run the autonomous field surveyor in the background with the screen turned off:</p>
+    <button class="btn" onclick="copyTermux()">COPY TERMUX COMMAND</button>
+  </div>
+
+  <script>
+    const HOST = "192.168.137.1";
+    const statusEl = document.getElementById("ws-status");
+    let ws = null;
+
+    function connect() {
+      ws = new WebSocket("ws://" + HOST + ":8098/ws");
+      ws.onopen = () => {
+        statusEl.innerText = "LATCHED (SLOT 50)";
+        statusEl.style.color = "#22c55e";
+        ws.send(JSON.stringify({ event: "MOBILE_LATCH", device: "Pixel 10", slot: 50 }));
+      };
+      ws.onclose = () => {
+        statusEl.innerText = "DISCONNECTED";
+        statusEl.style.color = "#ef4444";
+        setTimeout(connect, 2000);
+      };
+    }
+    connect();
+
+    window.addEventListener("deviceorientation", (e) => {
+      const a = (e.alpha || 0).toFixed(1);
+      const b = (e.beta || 0).toFixed(1);
+      const g = (e.gamma || 0).toFixed(1);
+      document.getElementById("orient-val").innerText = a + "°, " + b + "°, " + g + "°";
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ event: "MOBILE_ORIENT", a, b, g, slot: 50 }));
+      }
+    });
+
+    function copyTermux() {
+      const cmd = "termux-wake-lock && deno run --allow-net --allow-read --allow-write --allow-run /data/local/tmp/missoula_field_expedition.ts \"Field_Scan\" \"" + HOST + "\"";
+      navigator.clipboard.writeText(cmd).then(() => { alert("Termux command copied!"); });
+    }
+  </script>
+</body>
+</html>
