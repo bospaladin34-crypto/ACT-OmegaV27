@@ -342,29 +342,71 @@ pub struct ChannelInvariants {
 }
 
 pub fn compute_physics_invariants(loom: &BraidLoom) -> ChannelInvariants {
+    let mut steps = 0usize;
     let mut temporal_jumps = 0u32;
-    let mut steps = 0u32;
-    let mut i = 0;
-    while i + 1 < loom.slots.len() {
-        if let (Some(s0), Some(s1)) = (loom.slots.get(i), loom.slots.get(i + 1)) {
-            if s1.time_step < s0.time_step {
-                temporal_jumps = temporal_jumps + 1;
-            }
+    let mut degenerate_triads = 0u32;
+    let mut total_flow_score = 0.0f32;
+
+    let mut i = 0usize;
+    while i < loom.slots.len() {
+        if let Some(slot) = loom.slots.get(i) {
             steps = steps + 1;
+            let t = &slot.triplet;
+            let r_a = t.a.root.role_tag;
+            let r_b = t.b.root.role_tag;
+            let r_c = t.c.root.role_tag;
+
+            // 1. Triad Role Flow & Lawvere Categorical Completeness:
+            // Ideal triad: distinct (Entity, Operator, State). Degenerate: repeated roles.
+            let role_variety = if r_a != r_b && r_b != r_c && r_a != r_c {
+                1.00f32
+            } else if r_a != r_b || r_b != r_c || r_a != r_c {
+                0.75f32
+            } else {
+                degenerate_triads = degenerate_triads + 1;
+                0.30f32
+            };
+
+            let mean_compat = (t.a.compatibility_score + t.b.compatibility_score + t.c.compatibility_score) / 3.0f32;
+            
+            // 2. Inter-triplet transition affinity (Lawvere Chart Overlap)
+            let mut transition_factor = 1.00f32;
+            if let Some(next_slot) = loom.slots.get(i + 1) {
+                if next_slot.time_step < slot.time_step {
+                    temporal_jumps = temporal_jumps + 1;
+                }
+                let c_end = t.c.root.coords;
+                let a_start = next_slot.triplet.a.root.coords;
+                let dot = c_end.dot(&a_start);
+                let denom = (c_end.norm_sq().sqrt() * a_start.norm_sq().sqrt()).max(0.0001);
+                let cos_trans = dot / denom;
+                
+                // If adjacent roots are orthogonal or opposing, penalize transition
+                if cos_trans <= 0.0f32 {
+                    transition_factor = 0.70f32;
+                }
+            }
+
+            total_flow_score = total_flow_score + (role_variety * mean_compat * transition_factor);
         }
         i = i + 1;
     }
+
     let temporal_coherence = if steps == 0 {
-        1.0
+        1.0f32
     } else {
-        1.0 - (temporal_jumps as f32 / steps as f32)
+        (total_flow_score / (steps as f32)).max(0.0f32).min(1.0f32)
     };
+
+    // A phrase is causally sound only if coherence is above 0.50, no temporal reversals, and no degenerate triads
+    let causality_ok = (temporal_jumps == 0) && (degenerate_triads == 0) && (temporal_coherence >= 0.50f32);
+
     ChannelInvariants {
-        causality_ok: temporal_jumps == 0,
+        causality_ok,
         temporal_coherence,
         archetype_consistency: 0.0,
         symbol_coherence: 0.0,
-        structural_integrity: 0.0,
+        structural_integrity: temporal_coherence * 0.95f32,
         protocol_consistency: 0.0,
         tone_continuity: 0.0,
         valence_stability: 0.0,
