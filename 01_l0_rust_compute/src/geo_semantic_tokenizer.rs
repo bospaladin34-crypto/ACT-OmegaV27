@@ -450,46 +450,90 @@ impl GeoSemanticTokenizer {
         tokens
     }
 
-    pub fn embed(&self, token: &RawToken) -> GeometricEmbedding {
+        pub fn embed(&self, token: &RawToken) -> GeometricEmbedding {
         let phi = 1.61803398875f32;
         let ang_91 = 1.5882496f32;
         let ang_108 = 1.8849556f32;
+        let bytes = token.text.as_bytes();
+        let n = bytes.len();
+        let lanes = self.proj.cols;
 
-        let mut gem_sum = 0u32;
-        for b in token.text.bytes() {
-            gem_sum = gem_sum + (b as u32);
+        // Full-token FNV-1a digest: decorrelated tag derivation
+        let mut fnv = 2166136261u32;
+        let mut i = 0usize;
+        while i < n {
+            if let Some(b) = bytes.get(i) {
+                fnv = fnv ^ (*b as u32);
+                fnv = fnv.wrapping_mul(16777619u32);
+            }
+            i = i + 1;
         }
-        let root_idx = (gem_sum % 240) as u16;
+
+        let tags = SymbolicTagSet {
+            e8_root_index: Some((fnv % 240u32) as u16),
+            color_charge: Some(((fnv % 8u32) + 1u32) as u8),
+            decay_state: Some(0u8),
+            role_tag: Some(((fnv % 3u32) + 1u32) as u8),
+            channel_id: Some(1u8),
+        };
 
         let mut c = Vec::new();
-        let mut col = 0;
-        while col < self.proj.cols {
+        let mut col = 0usize;
+        while col < lanes {
             c.push(0.0f32);
             col = col + 1;
         }
 
-        let mut char_idx = 0usize;
-        for b in token.text.bytes() {
-            let val = b as f32;
-            let theta = (char_idx as f32) * ang_91 + ((gem_sum % 7) as f32) * ang_108;
-            let pol = ((char_idx as f32) * phi).sin() * (val * 0.1).cos();
-            let k = char_idx % self.proj.cols;
-            let k_next = (char_idx + 1) % self.proj.cols;
+        if lanes == 0 {
+            return GeometricEmbedding {
+                coords: c,
+                norm: 0.0f32,
+                symbolic: tags,
+            };
+        }
 
-            let contrib_cos = pol * theta.cos() * val.sqrt();
-            let contrib_sin = pol * theta.sin() * val.sqrt();
+        // Two passes: bigrams, then trigrams with domain separation
+        let mut order = 2usize;
+        while order < 4 {
+            let mut pos = 0usize;
+            while pos < n {
+                let mut h = 2166136261u32;
+                let mut k = 0usize;
+                while k < order {
+                    if let Some(b) = bytes.get(pos + k) {
+                        h = h ^ (*b as u32);
+                    } else {
+                        h = h ^ 0x9e3779b9u32;
+                    }
+                    h = h.wrapping_mul(16777619u32);
+                    k = k + 1;
+                }
+                h = h ^ (order as u32).wrapping_mul(0x85ebca6bu32);
+                h = h.wrapping_mul(16777619u32);
 
-            if let Some(elem) = c.get_mut(k) {
-                *elem = *elem + contrib_cos;
+                let lane = (h % (lanes as u32)) as usize;
+                let lane_next = (lane + 1) % lanes;
+                let mag_bits = (h >> 7) & 1023u32;
+                let mag = 0.5f32 + (mag_bits as f32) / 1023.0f32;
+                let signed = if (h & 1u32) == 0u32 { -mag } else { mag };
+                let theta = (pos as f32) * ang_91 + ((h % 7u32) as f32) * ang_108;
+                let pol = ((pos as f32) * phi).sin() * (signed * 0.5f32).cos();
+                let contrib_cos = pol * theta.cos() * signed;
+                let contrib_sin = pol * theta.sin() * signed;
+
+                if let Some(elem) = c.get_mut(lane) {
+                    *elem = *elem + contrib_cos;
+                }
+                if let Some(elem_next) = c.get_mut(lane_next) {
+                    *elem_next = *elem_next + contrib_sin;
+                }
+                pos = pos + 1;
             }
-            if let Some(elem_next) = c.get_mut(k_next) {
-                *elem_next = *elem_next + contrib_sin;
-            }
-            char_idx = char_idx + 1;
+            order = order + 1;
         }
 
         let mut sum_sq = 0.0f32;
-        let mut idx = 0;
+        let mut idx = 0usize;
         while idx < c.len() {
             if let Some(v) = c.get(idx) {
                 sum_sq = sum_sq + (*v) * (*v);
@@ -497,7 +541,7 @@ impl GeoSemanticTokenizer {
             idx = idx + 1;
         }
         let norm = sum_sq.sqrt();
-        let scale = if norm > 0.00001 { 1.0 / norm } else { 1.0 };
+        let scale = if norm > 0.00001f32 { 1.0f32 / norm } else { 1.0f32 };
 
         let mut normalized_coords = Vec::new();
         idx = 0;
@@ -508,19 +552,10 @@ impl GeoSemanticTokenizer {
             idx = idx + 1;
         }
 
-        let role = ((gem_sum % 3) + 1) as u8;
-        let color = ((gem_sum % 8) + 1) as u8;
-
         GeometricEmbedding {
             coords: normalized_coords,
-            norm: 1.0,
-            symbolic: SymbolicTagSet {
-                e8_root_index: Some(root_idx),
-                color_charge: Some(color),
-                decay_state: Some(0),
-                role_tag: Some(role),
-                channel_id: Some(1),
-            },
+            norm: 1.0f32,
+            symbolic: tags,
         }
     }
 

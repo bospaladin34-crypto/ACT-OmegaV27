@@ -38,3 +38,7 @@ pub mod knot_splicer;
 pub mod truth_collapse_gate;
 
 pub mod cognitive_pain_governor;
+pub mod e8_root_table {
+    use super::geo_semantic_tokenizer::{E8Point, LatticeRoot};
+    include!("e8_root_table.rs");
+}
