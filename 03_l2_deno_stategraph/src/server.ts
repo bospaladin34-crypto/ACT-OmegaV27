@@ -1,21 +1,19 @@
-// server.ts - ACT-Omega v27.0 L2 Deno StateGraph Server & ADB Hardware Bridge
+// server.ts - ACT-Omega v27.0 L2 Deno StateGraph Server & ADB Controller
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const PORT = 8098;
-const HUD_HTML = Deno.readTextFileSync("../00_orchestration_ps51/visualizer/act_omega_unified_hud.html");
-const MOBILE_HTML = Deno.readTextFileSync("../00_orchestration_ps51/visualizer/mobile_hud.html");
+const HUD_PATH = "../00_orchestration_ps51/visualizer/act_omega_unified_hud.html";
+const MOBILE_PATH = "../00_orchestration_ps51/visualizer/mobile_hud.html";
+const LOG_PATH = "../data/open/missoula_field_expedition.jsonl";
 
 console.log(`\x1b[36m=================================================================\x1b[0m`);
-console.log(`\x1b[1m\x1b[32m [ACT-OMEGA V27.0]: SERVER & ADB BRIDGE ONLINE @ PORT ${PORT}\x1b[0m`);
-console.log(` \x1b[33m[HUD COCKPIT]\x1b[0m     : http://localhost:${PORT}/hud`);
-console.log(` \x1b[33m[MOBILE VIEW]\x1b[0m     : http://localhost:${PORT}/mobile`);
-console.log(` \x1b[33m[ADB CONTROLLER]\x1b[0m  : /api/adb/status, /api/adb/battery, /api/adb/pull`);
+console.log(`\x1b[1m\x1b[32m [ACT-OMEGA V27.0]: AUTONOMOUS INGRESS SERVER ONLINE @ ${PORT}\x1b[0m`);
 console.log(`\x1b[36m=================================================================\x1b[0m\n`);
 
 serve(async (req: Request) => {
   const url = new URL(req.url);
 
-  // 1. API: ADB Device Status
+  // API: ADB Device Status
   if (url.pathname === "/api/adb/status") {
     try {
       const proc = new Deno.Command("adb.exe", { args: ["devices"] }).outputSync();
@@ -31,7 +29,7 @@ serve(async (req: Request) => {
     }
   }
 
-  // 2. API: Live Battery & Hardware Dumpsys over ADB
+  // API: Live Battery Dumpsys
   if (url.pathname === "/api/adb/battery") {
     try {
       const proc = new Deno.Command("adb.exe", { args: ["shell", "dumpsys", "battery"] }).outputSync();
@@ -53,7 +51,7 @@ serve(async (req: Request) => {
     }
   }
 
-  // 3. API: Trigger adb reverse tcp:8098 tcp:8098
+  // API: Latch ADB Reverse (tcp:8098)
   if (url.pathname === "/api/adb/reverse") {
     try {
       const proc = new Deno.Command("adb.exe", { args: ["reverse", "tcp:8098", "tcp:8098"] }).outputSync();
@@ -68,11 +66,11 @@ serve(async (req: Request) => {
     }
   }
 
-  // 4. API: Pull Field Ledger from Phone
+  // API: Auto-Pull Field Ledger from Phone
   if (url.pathname === "/api/adb/pull") {
     try {
       const proc = new Deno.Command("adb.exe", {
-        args: ["pull", "/sdcard/Download/missoula_field_expedition.jsonl", "../data/open/missoula_field_expedition.jsonl"],
+        args: ["pull", "/sdcard/Download/missoula_field_expedition.jsonl", LOG_PATH],
       }).outputSync();
       const stdout = new TextDecoder().decode(proc.stdout);
       return new Response(JSON.stringify({ success: true, output: stdout }), {
@@ -85,31 +83,30 @@ serve(async (req: Request) => {
     }
   }
 
-  // 5. WebSocket Ingress (/ws)
-  if (url.pathname === "/ws") {
-    if (req.headers.get("upgrade") !== "websocket") {
-      return new Response("Expected WebSocket", { status: 400 });
+  // API: Fetch Parsed Frames for Client Map Dynamic Reload
+  if (url.pathname === "/api/data/frames") {
+    try {
+      const text = Deno.readTextFileSync(LOG_PATH);
+      const frames = text
+        .split("\n")
+        .filter((l) => l.trim().startsWith("{") && l.trim().endsWith("}"))
+        .map((l) => JSON.parse(l));
+      return new Response(JSON.stringify(frames), {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
+    } catch (_) {
+      return new Response("[]", {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
     }
-    const { socket, response } = Deno.upgradeWebSocket(req);
-    socket.onopen = () => {
-      console.log(`\x1b[32m[WS LATCHED]\x1b[0m: Ingress stream active.`);
-    };
-    socket.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        if (data.event === "MOBILE_ORIENT") {
-          // Relayed live
-        }
-      } catch (_) {}
-    };
-    return response;
   }
 
-  // 6. Mobile View (/mobile)
+  // Static Views
   if (url.pathname === "/mobile") {
-    return new Response(MOBILE_HTML, { headers: { "content-type": "text/html; charset=utf-8" } });
+    const html = Deno.readTextFileSync(MOBILE_PATH);
+    return new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } });
   }
 
-  // 7. Cockpit (/hud or /)
-  return new Response(HUD_HTML, { headers: { "content-type": "text/html; charset=utf-8" } });
+  const hud = Deno.readTextFileSync(HUD_PATH);
+  return new Response(hud, { headers: { "content-type": "text/html; charset=utf-8" } });
 }, { port: PORT, hostname: "0.0.0.0" });

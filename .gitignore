@@ -26,3 +26,6 @@ node_modules/
 
 # Local Temporary Files
 data/blind/_key_sealed*.json
+# Ephemeral Desktop App Profiles & Caches
+data/hud_profile/
+**/hud_profile/
