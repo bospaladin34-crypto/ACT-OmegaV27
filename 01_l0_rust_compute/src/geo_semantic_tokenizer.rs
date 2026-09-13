@@ -493,7 +493,7 @@ impl GeoSemanticTokenizer {
         }
 
         // Two passes: bigrams, then trigrams with domain separation
-        let mut order = 2usize;
+        let mut order = 1usize;
         while order < 4 {
             let mut pos = 0usize;
             while pos < n {
@@ -517,7 +517,7 @@ impl GeoSemanticTokenizer {
                 let mag = 0.5f32 + (mag_bits as f32) / 1023.0f32;
                 let signed = if (h & 1u32) == 0u32 { -mag } else { mag };
                 let theta = (pos as f32) * ang_91 + ((h % 7u32) as f32) * ang_108;
-                let pol = ((pos as f32) * phi).sin() * (signed * 0.5f32).cos();
+                let pol = (((pos as f32) + 1.0f32) * phi).sin() * (signed * 0.5f32).cos();
                 let contrib_cos = pol * theta.cos() * signed;
                 let contrib_sin = pol * theta.sin() * signed;
 
