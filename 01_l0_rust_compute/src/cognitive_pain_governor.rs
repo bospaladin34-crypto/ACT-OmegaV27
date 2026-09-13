@@ -55,8 +55,8 @@ impl CognitivePainGovernor {
         state: &mut CognitivePainState,
         step_dissipation: f32,
         anomaly_stress: f32,
-        splicer: &KnotSurgeryEngine,
-        kernel: &BraidAttentionKernel,
+        _splicer: &KnotSurgeryEngine,
+        _kernel: &BraidAttentionKernel,
     ) {
         state.active_dissipation_joules = step_dissipation;
         state.decadic_epoch_counter = state.decadic_epoch_counter + 1;
