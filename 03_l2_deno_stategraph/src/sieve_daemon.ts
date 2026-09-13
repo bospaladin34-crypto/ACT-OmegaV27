@@ -1,6 +1,4 @@
 // sieve_daemon.ts - ACT-Omega v27.0 Domain 4 Autonomous Research & Sieve Daemon
-// Mediates between VESPER-RESEARCH (subordinate tool) and L0 Rust Topological Sieve
-
 import { snapText } from "./tokenizer_bridge.ts";
 
 export interface SieveAuditRecord {
@@ -20,7 +18,6 @@ export class AutonomousSieveDaemon {
   private vaultLogPath = "../data/open/verified_scientific_vault.jsonl";
   private quarantineLogPath = "../data/open/sieve_quarantine.jsonl";
 
-  // 1. Query VESPER-RESEARCH to extract atomic (S, P, O) triplets from topic
   public async researchTopic(topic: string): Promise<Array<{ subject: string; predicate: string; object: string }>> {
     const prompt = `Deconstruct the physical topic "${topic}" into 3 strictly grounded atomic relational statements.
 Format each line exactly as: Subject | Predicate | Object
@@ -45,7 +42,7 @@ Do not include conversational filler or disclaimers.`;
       for (const line of lines) {
         const parts = line.split("|").map((p: string) => p.trim());
         if (parts.length >= 3) {
-          triplets.push({ subject: parts[0], predicate: parts, object: parts });
+          triplets.push({ subject: parts.at(0) || "", predicate: parts.at(1) || "", object: parts.at(2) || "" });
         }
       }
       return triplets;
@@ -54,12 +51,10 @@ Do not include conversational filler or disclaimers.`;
     }
   }
 
-  // 2. Audit Proposition through L0 Rust Tokenizer & Cech Sheaf Filter
   public auditTriplet(topic: string, triplet: { subject: string; predicate: string; object: string }): SieveAuditRecord {
     const fullText = `${triplet.subject} ${triplet.predicate} ${triplet.object}`;
     const tokens = snapText(fullText);
 
-    // If FFI is offline, provide deterministic structural fallback
     let snappedRoots: Array<number> = [];
     let compats: Array<number> = [];
     let roles: Array<number> = [];
@@ -71,18 +66,15 @@ Do not include conversational filler or disclaimers.`;
     } else {
       const words = fullText.split(/\s+/);
       snappedRoots = words.slice(0, 3).map((w, i) => (w.length * 37 + i * 19) % 240);
-      compats = [0.72, 0.68, 0.75];
-      roles =;
+      compats = Array.of(0.72, 0.68, 0.75);
+      roles = Array.of(1, 2, 3);
     }
 
-    // Role variety calculation: ideal is 3 distinct roles (1, 2, 3)
     const distinctRoles = new Set(roles).size;
     const triadVarietyScore = distinctRoles === 3 ? 1.00 : (distinctRoles === 2 ? 0.75 : 0.30);
-
     const meanCompatibility = compats.reduce((a, b) => a + b, 0) / Math.max(1, compats.length);
     const coherenceScore = parseFloat((triadVarietyScore * meanCompatibility).toFixed(4));
 
-    // Sheaf Invariant: Accept only if Coherence >= 0.48 and no degenerate collision
     const isLaminar = coherenceScore >= 0.48 && triadVarietyScore > 0.30;
     const sheafStatus = isLaminar ? "LAMINAR_ACCEPTED" : "OBSTRUCTION_QUARANTINED";
 
@@ -98,7 +90,6 @@ Do not include conversational filler or disclaimers.`;
       sheafStatus
     };
 
-    // Commit to persistent log
     const targetPath = isLaminar ? this.vaultLogPath : this.quarantineLogPath;
     try {
       Deno.writeTextFileSync(targetPath, JSON.stringify(record) + "\n", { append: true });
@@ -122,7 +113,6 @@ if (import.meta.main) {
   const triplets = await daemon.researchTopic(topic);
 
   if (triplets.length === 0) {
-    // Grounded fallback test triplet if Ollama daemon is in quiescent standby
     console.log("[NOTE]: Ollama daemon in standby. Evaluating benchmark proposition...");
     triplets.push({
       subject: "Vacuum metric drag",
