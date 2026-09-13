@@ -1,3 +1,5 @@
+use crate::braid_attention::BraidGenerator;
+use crate::braid_attention::BraidAttentionKernel;
 // knot_splicer.rs - Task 32 Autonomous Topological Sheaf Repair & Knot Splicer
 // Enforces Zero Square Bracket Invariant across entire module
 

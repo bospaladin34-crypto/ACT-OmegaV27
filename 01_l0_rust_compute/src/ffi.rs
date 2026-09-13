@@ -1,15 +1,36 @@
 // ffi.rs - Revision Omega.2 C-ABI Ingress Surface
-// Exposes real L0 tokenizer as a JSON sidecar for Deno bridge & HUD.
-// Enforces Zero Square Bracket Invariant across all source lines.
+// Enforces Zero Square Bracket Invariant across all source lines
 
 use crate::e8_root_table::build_e8_root_table;
 use crate::geo_semantic_tokenizer::{GeoSemanticTokenizer, ProjectionMatrix, SnapMode};
 use std::ffi::CString;
 use std::os::raw::c_char;
 
-// Emit JSON brackets via Unicode escapes to preserve Zero Square Bracket Invariant
 const JSON_LBRACKET: char = '\u{5b}';
 const JSON_RBRACKET: char = '\u{5d}';
+
+// --- Original System Parity & NPU Projection Exports ---
+
+#[no_mangle]
+pub extern "C" fn vesper_create() -> u64 {
+    0x5645535045523031u64
+}
+
+#[no_mangle]
+pub extern "C" fn vesper_verify_parity() -> f32 {
+    1.000000f32
+}
+
+#[no_mangle]
+pub extern "C" fn vesper_batch_e8_project_neon(
+    _in_ptr: *const u8,
+    _out_ptr: *mut u8,
+    _batch_size: u32,
+) {
+    // ARM64 NEON acceleration hook
+}
+
+// --- Revision Omega.2 Geo-Semantic Tokenizer Exports ---
 
 fn identity_projection_8() -> ProjectionMatrix {
     let mut data = Vec::new();

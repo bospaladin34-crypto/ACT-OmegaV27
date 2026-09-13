@@ -1,3 +1,4 @@
+use crate::geo_semantic_tokenizer::E8Point;
 // braid_attention.rs - Task 34 Non-Commutative Braid Attention Engine
 // Enforces Zero Square Bracket Invariant across entire module
 

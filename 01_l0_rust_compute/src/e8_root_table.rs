@@ -3,7 +3,6 @@
 // 112 vector roots: signed permutations of (1, 1, 0, 0, 0, 0, 0, 0)
 // 128 spinor roots: eight halves (+-0.5) with an even number of minus signs.
 
-use super::geo_semantic_tokenizer::{E8Point, LatticeRoot};
 
 fn set_coord(p: &mut E8Point, idx: usize, v: f32) {
     match idx {

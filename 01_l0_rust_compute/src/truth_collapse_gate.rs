@@ -1,3 +1,6 @@
+use crate::braid_attention::BraidGenerator;
+use crate::braid_attention::BraidAttentionKernel;
+use crate::knot_splicer::KnotSurgeryEngine;
 // truth_collapse_gate.rs - Task 35 E-J-A Abductive Truth & Collapse Gate
 // Enforces Zero Square Bracket Invariant across entire module
 

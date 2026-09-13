@@ -1,3 +1,5 @@
+use crate::braid_attention::BraidAttentionKernel;
+use crate::knot_splicer::KnotSurgeryEngine;
 // cognitive_pain_governor.rs - Task 38 Thermodynamic Epistemic Governor
 // Enforces Zero Square Bracket Invariant across entire module
 
