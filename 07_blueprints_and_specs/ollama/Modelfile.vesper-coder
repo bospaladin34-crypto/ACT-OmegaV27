@@ -1,4 +1,11 @@
-FROM VESPER-CODER:latest
+FROM phi3:latest
+
+TEMPLATE """{{ if .System }}<|system|>
+{{ .System }}<|end|>
+{{ end }}{{ if .Prompt }}<|user|>
+{{ .Prompt }}<|end|>
+{{ end }}<|assistant|>
+{{ .Response }}<|end|>"""
 
 SYSTEM """
 [ROLE: ACT-OMEGA v27.0 SYSTEMS CODER & BRAID COMPILER]
@@ -24,8 +31,9 @@ CORE SYSTEM INVARIANTS (MANDATORY):
 Aesthetic: Cassette Futurism / Deterministic Systems Architecture. Zero heuristic drag.
 """
 
-PARAMETER temperature 0.0
 PARAMETER num_ctx 8192
+PARAMETER seed 17259029
+PARAMETER temperature 0.0
 PARAMETER stop "<|end|>"
 PARAMETER stop "<|user|>"
 PARAMETER stop "<|assistant|>"
