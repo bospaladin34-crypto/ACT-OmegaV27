@@ -4,13 +4,13 @@ param(
     [int]$MaxAttempts = 3
 )
 
-$ErrorActionPreference = 'Stop'
 $rootPath = "C:\sovereign_manifold_v27"
 $cppDir = "$rootPath\02_l1_cpp23_cabi"
 $sandboxDir = "$cppDir\target\sandbox"
 $candidateSrc = "$sandboxDir\candidate.cpp"
 $candidateExe = "$sandboxDir\candidate.exe"
 $candidateObj = "$sandboxDir\candidate.obj"
+$compileLog = "$sandboxDir\compile.log"
 
 $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
@@ -37,7 +37,7 @@ while ($attempt -le $MaxAttempts -and -not $success) {
             options = @{ temperature = 0.0 }
         } | ConvertTo-Json
 
-        $res = Invoke-RestMethod -Uri "[http://127.0.0.1:11434/api/generate](http://127.0.0.1:11434/api/generate)" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 30
+        $res = Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 30
         $rawResponse = $res.response
     } catch {
         Write-Host "[WARNING]: Local model unreachable or timed out; utilizing baseline." -ForegroundColor Yellow
@@ -50,7 +50,7 @@ while ($attempt -le $MaxAttempts -and -not $success) {
     if ($cleanCode.Contains($fence)) {
         $arr = $cleanCode -split [regex]::Escape($fence)
         if ($arr.Count -ge 3) {
-            $codePart = $arr
+            $codePart = $arr.Item(1)
             if ($codePart.StartsWith("cpp") -or $codePart.StartsWith("rust")) {
                 $codePart = $codePart.Substring(4)
             }
@@ -76,9 +76,10 @@ while ($attempt -le $MaxAttempts -and -not $success) {
     Write-Host "-> Wrote candidate to $candidateSrc" -ForegroundColor Green
 
     Write-Host "-> Invoking MSVC Native Compiler..." -ForegroundColor Cyan
-    $compileCmd = "`"$vcvarsBat`" && cl.exe /std:c++20 /O2 /EHsc `"$candidateSrc`" /Fe:`"$candidateExe`" /Fo:`"$candidateObj`""
     
-    $compileOutput = cmd.exe /c $compileCmd 2>&1
+    # Execute compilation with redirection to log file to prevent NativeCommandError
+    $compileCmd = "`"$vcvarsBat`" >nul 2>&1 && cl.exe /std:c++20 /O2 /EHsc `"$candidateSrc`" /Fe:`"$candidateExe`" /Fo:`"$candidateObj`" > `"$compileLog`" 2>&1"
+    cmd.exe /c $compileCmd
     $compileExit = $LASTEXITCODE
 
     if ($compileExit -eq 0 -and (Test-Path $candidateExe)) {
@@ -88,7 +89,7 @@ while ($attempt -le $MaxAttempts -and -not $success) {
         $success = $true
     } else {
         Write-Host "[COMPILER ERROR DETECTED]: Initiating Task 32 Knot Surgery..." -ForegroundColor Red
-        $errText = ($compileOutput | Out-String)
+        $errText = Get-Content $compileLog -Raw
         $currentPrompt = "TASK 32 KNOT SURGERY: Your code failed compilation with error:`n$errText`nRefactor the code to fix these errors completely."
         $attempt++
     }
