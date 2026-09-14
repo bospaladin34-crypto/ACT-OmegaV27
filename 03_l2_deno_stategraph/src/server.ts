@@ -360,6 +360,28 @@ const language = body.language || "cpp";
     }
   }
 
+    // API: Research Document Ingestion (Task 46)
+  if (url.pathname === "/api/research/ingest" && req.method === "POST") {
+    try {
+      const body = await req.json();
+      const text = typeof body.text === "string" ? body.text : "";
+      const title = typeof body.title === "string" ? body.title : "Ingested_Research";
+
+      return new Response(JSON.stringify({
+        status: "INGESTION_RECEIVED",
+        title,
+        textLength: text.length,
+        timestamp: new Date().toISOString()
+      }), {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: String(e) }), {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
+    }
+  }
+
   // Static Views with Safe Fallback
   try {
     if (url.pathname === "/mobile") {
