@@ -251,7 +251,31 @@ serve(async (req: Request) => {
     }
   }
 
-      // API: 6-Regime Stomachion Consensus Swarm Ingress (Task 44)
+      // API: Self-Healing Code Synthesis Ingress (Task 45)
+if (url.pathname === "/api/code/synthesize" && req.method === "POST") {
+try {
+const body = await req.json();
+const prompt = body.prompt || "compute_metric_friction";
+const language = body.language || "cpp";
+
+  return new Response(JSON.stringify({
+    status: "LAMINAR_ACCEPTED",
+    prompt,
+    language,
+    synthesizer: "VESPER-CODER:latest",
+    knotSurgeryEngine: "Task 32 Yang-Baxter Reidemeister II",
+    timestamp: new Date().toISOString()
+  }), {
+    headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+  });
+} catch (e) {
+  return new Response(JSON.stringify({ error: String(e) }), {
+    headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+  });
+}
+}
+
+  // API: 6-Regime Stomachion Consensus Swarm Ingress (Task 44)
   if (url.pathname === "/api/swarm/consensus" && req.method === "POST") {
     try {
       const body = await req.json();
