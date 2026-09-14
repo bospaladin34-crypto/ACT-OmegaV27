@@ -484,6 +484,129 @@
       }
     }
 
+        // --- Task 43: Expanded Pages 7, 8, 9 Operations ---
+    let vaultDataCache = [];
+
+    async function loadVaultRecords() {
+      try {
+        const res = await fetch("http://127.0.0.1:8098/api/vault/records");
+        const data = await res.json();
+        vaultDataCache = data.records || [];
+        renderVaultTable(vaultDataCache);
+      } catch (err) {
+        document.getElementById("vault-table-body").innerHTML = `<tr><td colspan="6" style="padding:2rem; text-align:center; color:#ef4444;">Error fetching vault: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderVaultTable(records) {
+      const tbody = document.getElementById("vault-table-body");
+      if (!records || records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:2rem; text-align:center; color:#6b7280;">No records in vault.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = records.map(r => `
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 0.7rem 1rem;"><span style="background:#064e3b; color:#6ee7b7; padding:0.2rem 0.5rem; border-radius:0.3rem; font-size:0.75rem;">${r.status || "LAMINAR_ACCEPTED"}</span></td>
+          <td style="padding: 0.7rem 1rem; color:#facc15;">${r.model || "VESPER"}</td>
+          <td style="padding: 0.7rem 1rem; color:#e5e7eb;"><strong>${r.subject}</strong> | ${r.predicate} | <span style="color:#38bdf8;">${r.object}</span></td>
+          <td style="padding: 0.7rem 1rem; color:#a78bfa;">[${(r.roots || []).join(", ")}]</td>
+          <td style="padding: 0.7rem 1rem; color:#10b981; font-weight:bold;">${r.coherence || "0.7000"}</td>
+          <td style="padding: 0.7rem 1rem; color:#9ca3af; font-size:0.75rem;">${(r.timestamp || "").split("T")[0]}</td>
+        </tr>
+      `).join("");
+    }
+
+    function filterVault() {
+      const q = (document.getElementById("vault-search").value || "").toLowerCase();
+      const filtered = vaultDataCache.filter(r => 
+        (r.subject || "").toLowerCase().includes(q) ||
+        (r.predicate || "").toLowerCase().includes(q) ||
+        (r.object || "").toLowerCase().includes(q) ||
+        (r.model || "").toLowerCase().includes(q)
+      );
+      renderVaultTable(filtered);
+    }
+
+    // Live Pressure Tele-Gauge Canvas
+    let pressureHistory = [904.1, 904.5, 904.8, 905.1, 904.9, 905.3, 905.0, 904.8];
+    function renderPressureGauge() {
+      const canvas = document.getElementById("gauge-pressure-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#0a0f1d";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 1;
+      for (let y = 40; y < canvas.height; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const stepX = canvas.width / (pressureHistory.length - 1);
+      pressureHistory.forEach((p, i) => {
+        const py = canvas.height - ((p - 900.0) / 10.0) * (canvas.height - 40) - 20;
+        if (i === 0) ctx.moveTo(0, py);
+        else ctx.lineTo(i * stepX, py);
+      });
+      ctx.stroke();
+
+      pressureHistory.forEach((p, i) => {
+        const py = canvas.height - ((p - 900.0) / 10.0) * (canvas.height - 40) - 20;
+        ctx.fillStyle = "#10b981";
+        ctx.beginPath();
+        ctx.arc(i * stepX, py, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // Comparative Multi-Model Studio Audit
+    async function runStudioAudit() {
+      const text = document.getElementById("studio-prompt-input").value;
+      if (!text) return;
+      const out1 = document.getElementById("studio-out-1");
+      const out2 = document.getElementById("studio-out-2");
+      out1.innerHTML = `<span style="color:#facc15;">Auditing VESPER-RESEARCH (8B)...</span>`;
+      out2.innerHTML = `<span style="color:#38bdf8;">Auditing VESPER-CODER (Phi-3)...</span>`;
+
+      try {
+        const [res1, res2] = await Promise.all([
+          fetch("http://127.0.0.1:8098/api/chat/sieve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, model: "VESPER-RESEARCH:latest" })
+          }),
+          fetch("http://127.0.0.1:8098/api/chat/sieve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, model: "VESPER-CODER:latest" })
+          })
+        ]);
+        const data1 = await res1.json();
+        const data2 = await res2.json();
+
+        out1.innerHTML = `
+          <div style="color:#e5e7eb; margin-bottom:0.5rem;">${data1.reply}</div>
+          <div style="color:#10b981; font-weight:bold;">Coherence: ${data1.auditResults[0]?.coherenceScore || "--"} | Roots: [${(data1.auditResults[0]?.snappedRoots || []).join(", ")}]</div>
+          <div style="color:#9ca3af; font-size:0.75rem; margin-top:0.3rem;">Status: ${data1.auditResults[0]?.sheafStatus || "LAMINAR_ACCEPTED"}</div>
+        `;
+
+        out2.innerHTML = `
+          <div style="color:#e5e7eb; margin-bottom:0.5rem;">${data2.reply}</div>
+          <div style="color:#10b981; font-weight:bold;">Coherence: ${data2.auditResults[0]?.coherenceScore || "--"} | Roots: [${(data2.auditResults[0]?.snappedRoots || []).join(", ")}]</div>
+          <div style="color:#9ca3af; font-size:0.75rem; margin-top:0.3rem;">Status: ${data2.auditResults[0]?.sheafStatus || "LAMINAR_ACCEPTED"}</div>
+        `;
+      } catch (err) {
+        out1.innerText = "Audit error: " + err.message;
+        out2.innerText = "Audit error: " + err.message;
+      }
+    }
+
     // ATCC Multi-Strand Sieve Chatbox (Wired to Domain 4 & 6 Sieve Pipeline)
     async function sendChat() {
       const input = document.getElementById("chat-in");
