@@ -153,9 +153,9 @@ setInterval(() => {
 
   // Magnetic & Barometric Differentials
   currentMag = {
-    x: MISSOULA_B_TOR.x + (Math.random() * 0.14 - 0.07),
-    y: MISSOULA_B_TOR.y + (Math.random() * 0.14 - 0.07),
-    z: MISSOULA_B_TOR.z + (Math.random() * 0.14 - 0.07),
+    x: MISSOULA_B_TOR.x,
+    y: MISSOULA_B_TOR.y,
+    z: MISSOULA_B_TOR.z,
   };
   const deltaMag = Math.sqrt(
     Math.pow(currentMag.x - lastMag.x, 2) +
