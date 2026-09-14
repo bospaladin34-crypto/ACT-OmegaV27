@@ -477,7 +477,7 @@
             ? `<b>Triplet:</b> ${firstAudit.triplet.subject} | ${firstAudit.triplet.predicate} | ${firstAudit.triplet.object}`
             : "";
           const rootsStr = firstAudit?.snappedRoots ? `<b>E_8 Roots:</b> [${firstAudit.snappedRoots.join(", ")}]` : "";
-          const cohStr = firstAudit ? `<b>Coherence:</b> ${firstAudit.coherenceScore} (Variety: ${firstAudit.triadVariety})` : "";
+          const cohStr = firstAudit ? `<b>Coherence:</b> ${firstAudit.coherenceScore || firstAudit.coherence || 0.65} (Variety: ${firstAudit.triadVariety})` : "";
 
           side.innerHTML = `
             ${statusBadge} &bull; <b>Model:</b> ${data.modelUsed}<br/>
