@@ -70,7 +70,7 @@ async function startDirectoryWatcher() {
 startDirectoryWatcher();
 
 // 3. Persistent 15.965 Hz Carrier Loop
-setInterval(() => {
+setInterval(async () => {
   vitals.epoch++;
 
   // 10:1 Decadic Decimation Super-Epoch (every 10 ticks = 626.36 ms)
@@ -78,7 +78,18 @@ setInterval(() => {
     vitals.macroEpochs++;
     
     // Simulate stochastic stiction drift
-    vitals.stictionJoules += (Math.random() * 0.02 - 0.008);
+        // Grounded Physical Stiction: Derived from physical thermal dissipation
+    // Baseline sub-Landauer stiction is 1.2054 J. Modulated by hardware temperature.
+    let tempC = 30.0;
+    try {
+      const batRes = await fetch("http://127.0.0.1:8098/api/adb/battery");
+      if (batRes.ok) {
+        const batData = await batRes.json();
+        if (batData.temperature) { tempC = parseFloat(batData.temperature) / 10.0; }
+      }
+    } catch (_) {}
+    const deltaT = Math.max(0.0, tempC - 25.0);
+    vitals.stictionJoules = parseFloat((1.2054 + (deltaT * 0.0018)).toFixed(4));
 
     // If stiction approaches the 1.4411 J stiction threshold, trigger autopoietic discharge
     if (vitals.stictionJoules >= 1.4411) {
