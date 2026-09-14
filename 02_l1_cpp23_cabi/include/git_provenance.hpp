@@ -27,11 +27,11 @@ public:
         uint64_t epoch = commit_counter_.fetch_add(1, std::memory_order_acq_rel);
         out_desc->commit_epoch = epoch;
         std::strncpy(out_desc->branch_ref.data(), "vesper_prod", 15);
-        out_desc->branch_ref.data() = '\0';
+        out_desc->branch_ref.back() = '\0';
 
         const char* hex = "0123456789abcdef";
         for (int i = 0; i < 40; ++i) {
-            out_desc->sha1_hash[i] = hex[(epoch * 7 + i * 13) % 16];
+            out_desc->sha1_hash.data()[i] = hex[(epoch * 7 + i * 13) % 16];
         }
         return true;
     }
