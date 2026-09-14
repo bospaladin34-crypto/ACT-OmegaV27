@@ -251,7 +251,44 @@ serve(async (req: Request) => {
     }
   }
 
-    // API: Epistemic Vault Records Ingress
+      // API: 6-Regime Stomachion Consensus Swarm Ingress (Task 44)
+  if (url.pathname === "/api/swarm/consensus" && req.method === "POST") {
+    try {
+      const body = await req.json();
+      const topic = typeof body.topic === "string" ? body.topic : "Vacuum Geometric Friction";
+      const { executeSwarmConsensus } = await import("./stomachion_swarm.ts");
+      const outcome = await executeSwarmConsensus(topic);
+
+      // Persist to Vault if consensus reached
+      if (outcome.isConsensusReached) {
+        try {
+          const vaultLine = JSON.stringify({
+            timestamp: new Date().toISOString(),
+            model: "STOMACHION-6-SWARM",
+            triplet: {
+              subject: topic,
+              predicate: "achieves multi-regime consensus",
+              object: "6-slot E8 sheaf convergence"
+            },
+            snappedRoots: [58, 125, 76],
+            coherenceScore: outcome.meanCoherence,
+            sheafStatus: "LAMINAR_ACCEPTED"
+          }) + "\n";
+          Deno.writeTextFileSync("C:/sovereign_manifold_v27/data/open/verified_scientific_vault.jsonl", vaultLine, { append: true });
+        } catch (_) {}
+      }
+
+      return new Response(JSON.stringify(outcome), {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: String(e) }), {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
+    }
+  }
+
+  // API: Epistemic Vault Records Ingress
   if (url.pathname === "/api/vault/records" && req.method === "GET") {
     try {
       const records: Array<Record<string, any>> = [];
