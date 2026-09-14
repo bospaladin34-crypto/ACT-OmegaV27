@@ -145,6 +145,21 @@
     <div id="page-chat" class="page-view">
       <div class="chat-container">
         <div class="chat-main">
+          <!-- Model Selection & VRAM Warm-up Toolbar -->
+          <div style="background: #0a0f1d; border-bottom: 1px solid #1f2937; padding: 0.6rem 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase;">TRANSDUCER:</span>
+              <select id="model-select" onchange="onModelChange()" style="background: #111827; border: 1px solid #374151; color: #38bdf8; font-family: monospace; font-size: 0.82rem; padding: 0.35rem 0.6rem; border-radius: 0.3rem; outline: none;">
+                <option value="VESPER-RESEARCH:latest" selected>VESPER-RESEARCH (Llama 3.1 8B)</option>
+                <option value="VESPER-CODER:latest">VESPER-CODER (Phi-3 Mini)</option>
+                <option value="VESPER-BASE:latest">VESPER-BASE (Missoula Anchor)</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+              <span id="vram-badge" style="font-size: 0.72rem; background: #064e3b; color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 0.3rem;">VRAM STANDBY</span>
+              <button onclick="prewarmVram()" style="background: #4f46e5; color: white; border: none; font-size: 0.75rem; font-family: monospace; font-weight: bold; padding: 0.35rem 0.7rem; border-radius: 0.3rem; cursor: pointer;">PRE-WARM VRAM</button>
+            </div>
+          </div>
           <div class="chat-history" id="chat-hist">
             <div class="chat-msg chat-engine">
               <b>[ATCC Cognitive Core Online]</b>: Revision &Omega;.1 Geometric-Semantic Tokenizer & Braid Loom initialized. Inputs undergo non-commutative Artin braid crossings (B_8), Cech cohomology verification (H^1 = 0), and Penrose Objective Collapse (E_G &middot; &tau; &ge; &hbar;) before token emission.
@@ -429,7 +444,47 @@
     }
     renderScope();
 
-        // ATCC Multi-Strand Sieve Chatbox (Wired to Domain 4 & 6 Sieve Pipeline)
+            // Model Selection & VRAM Pre-Warming
+    async function onModelChange() {
+      const select = document.getElementById("model-select");
+      const model = select.value;
+      const badge = document.getElementById("vram-badge");
+      badge.innerText = "SWITCHING...";
+      badge.style.background = "#854d0e";
+      badge.style.color = "#fef08a";
+      await prewarmVram();
+    }
+
+    async function prewarmVram() {
+      const select = document.getElementById("model-select");
+      const model = select.value;
+      const badge = document.getElementById("vram-badge");
+      badge.innerText = "WARMING VRAM...";
+      badge.style.background = "#1e3a8a";
+      badge.style.color = "#93c5fd";
+
+      try {
+        const res = await fetch("http://127.0.0.1:8098/api/model/warmup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model })
+        });
+        const data = await res.json();
+        if (data.success) {
+          badge.innerText = "VRAM HOT (RTX 3050)";
+          badge.style.background = "#064e3b";
+          badge.style.color = "#6ee7b7";
+        } else {
+          badge.innerText = "WARMUP STANDBY";
+          badge.style.background = "#374151";
+          badge.style.color = "#9ca3af";
+        }
+      } catch (_) {
+        badge.innerText = "WARMUP OFFLINE";
+      }
+    }
+
+    // ATCC Multi-Strand Sieve Chatbox (Wired to Domain 4 & 6 Sieve Pipeline)
     async function sendChat() {
       const input = document.getElementById("chat-in");
       const text = input.value.trim();
@@ -456,7 +511,7 @@
         const res = await fetch("http://127.0.0.1:8098/api/chat/sieve", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text })
+          body: JSON.stringify({ text, model: document.getElementById("model-select").value })
         });
         const data = await res.json();
 
