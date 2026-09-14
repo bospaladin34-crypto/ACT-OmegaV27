@@ -1,6 +1,7 @@
 #include "../include/stomachion_swarm.hpp"
 #include <iostream>
 #include <cassert>
+#include <array>
 #include <cstring>
 
 using namespace act_omega::cabi;
@@ -12,7 +13,7 @@ int main() {
     std::cout << "==================================================================" << std::endl;
 
     std::array<StomachionSlotState, 6> swarm{};
-    const char* roles = {
+    std::array<const char*, 6> roles = {
         "Deductive Axiomatics",
         "Inductive Ingestion",
         "Abductive Hypothesis",
@@ -22,13 +23,13 @@ int main() {
     };
 
     for (uint32_t i = 0; i < 6; ++i) {
-        swarm[i].slot_id = 67 + i;
-        swarm[i].regime_id = i;
-        swarm[i].coherence = 0.65f + i * 0.02f;
-        swarm[i].snapped_root = 58 + i * 10;
-        swarm[i].is_converged = 1;
-        std::strncpy(swarm[i].model_tag.data(), "VESPER", 15);
-        std::strncpy(swarm[i].role_name.data(), roles[i], 23);
+        swarm.at(i).slot_id = 67 + i;
+        swarm.at(i).regime_id = i;
+        swarm.at(i).coherence = 0.65f + i * 0.02f;
+        swarm.at(i).snapped_root = 58 + i * 10;
+        swarm.at(i).is_converged = 1;
+        std::strncpy(swarm.at(i).model_tag.data(), "VESPER", 15);
+        std::strncpy(swarm.at(i).role_name.data(), roles.at(i), 23);
     }
 
     float mean_coh = 0.0f;
