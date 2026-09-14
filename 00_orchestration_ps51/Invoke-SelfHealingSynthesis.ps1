@@ -45,10 +45,12 @@ while ($attempt -le $MaxAttempts -and -not $success) {
     }
 
     $cleanCode = $rawResponse.Trim()
-    if ($cleanCode.Contains("```")) {
-        $parts =$cleanCode.Split("```")
-        if ($parts.Length -ge 3) {
-            $codePart = $parts.Item(1)
+    $fence = [string][char]96 + [string][char]96 + [string][char]96
+    
+    if ($cleanCode.Contains($fence)) {
+        $arr = $cleanCode -split [regex]::Escape($fence)
+        if ($arr.Count -ge 3) {
+            $codePart = $arr
             if ($codePart.StartsWith("cpp") -or $codePart.StartsWith("rust")) {
                 $codePart = $codePart.Substring(4)
             }
