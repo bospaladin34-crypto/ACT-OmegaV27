@@ -2024,3 +2024,188 @@
 {"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067552,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11285,"deltaPressureHpa":0.006,"currentPressureHpa":907.17,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:47:12.677Z"}
 {"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067568,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.05537,"deltaPressureHpa":0,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:47:45.543Z"}
 {"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067584,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.03836,"deltaPressureHpa":0.0011,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:48:20.417Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067600,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.16583,"deltaPressureHpa":0.0033,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:48:55.471Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067616,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.13156,"deltaPressureHpa":0.0014,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:49:30.287Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067632,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11848,"deltaPressureHpa":0,"currentPressureHpa":907.18,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:49:55.769Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067648,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":7.42,"rHom":13.09,"deltaMagUt":0.06124,"deltaPressureHpa":0.0776,"currentPressureHpa":907.04,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T19:50:17.416Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067664,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.08316,"deltaPressureHpa":0,"currentPressureHpa":907.24,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:50:25.523Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067680,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.1052,"deltaPressureHpa":0,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:50:33.354Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067696,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.16862,"deltaPressureHpa":0.0203,"currentPressureHpa":907.21,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:50:43.228Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067712,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11962,"deltaPressureHpa":0.0035,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:50:51.311Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067728,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.08258,"deltaPressureHpa":0.0007,"currentPressureHpa":907.18,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:51:12.527Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067744,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.06745,"deltaPressureHpa":0.0121,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:51:44.483Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067760,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.02844,"deltaPressureHpa":0.004,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:52:18.501Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067776,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.12203,"deltaPressureHpa":0.001,"currentPressureHpa":907.21,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:52:34.368Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067792,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11603,"deltaPressureHpa":0,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:52:44.497Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067808,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.08035,"deltaPressureHpa":0.0032,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:53:00.382Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067824,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.08231,"deltaPressureHpa":0.0075,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:53:16.882Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067840,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11373,"deltaPressureHpa":0.006,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:53:28.864Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067856,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11212,"deltaPressureHpa":0,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:53:43.166Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067872,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.0907,"deltaPressureHpa":0,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:53:57.144Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067888,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.04064,"deltaPressureHpa":0,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:54:13.076Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067904,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.12145,"deltaPressureHpa":0,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:54:25.173Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067920,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.07333,"deltaPressureHpa":0.0007,"currentPressureHpa":907.18,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:54:37.039Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067936,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.06433,"deltaPressureHpa":0.0056,"currentPressureHpa":907.19,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:54:49.166Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067952,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":7.42,"rHom":11.99,"deltaMagUt":0.02458,"deltaPressureHpa":3.9794,"currentPressureHpa":911.17,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T19:55:01.326Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067968,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.06658,"deltaPressureHpa":0,"currentPressureHpa":907.01,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:55:16.046Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5067984,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.14307,"deltaPressureHpa":0.0029,"currentPressureHpa":907.18,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:55:26.071Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068000,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.1253,"deltaPressureHpa":0,"currentPressureHpa":907.23,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:55:36.139Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068016,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11931,"deltaPressureHpa":0,"currentPressureHpa":907.31,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:55:44.066Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068032,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.10319,"deltaPressureHpa":0,"currentPressureHpa":907.27,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:55:49.934Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068048,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.05727,"deltaPressureHpa":0.009,"currentPressureHpa":907.17,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:55:58.142Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068064,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.05,"deltaPressureHpa":0.002,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:56:14.330Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068080,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.06837,"deltaPressureHpa":0.0052,"currentPressureHpa":907.21,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:56:49.732Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068096,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.06586,"deltaPressureHpa":0.0052,"currentPressureHpa":907.21,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:57:25.536Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068112,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.1081,"deltaPressureHpa":0.0054,"currentPressureHpa":907.24,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:57:58.926Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068128,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.08403,"deltaPressureHpa":0.0007,"currentPressureHpa":907.24,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:58:35.434Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068144,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.08447,"deltaPressureHpa":0.0001,"currentPressureHpa":907.26,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:59:11.937Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068160,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.07847,"deltaPressureHpa":0.0063,"currentPressureHpa":907.27,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:59:48.514Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068176,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.14305,"deltaPressureHpa":0,"currentPressureHpa":907.1,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T19:59:56.502Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068192,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.04604,"deltaPressureHpa":0.0028,"currentPressureHpa":907.24,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:00:06.434Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068208,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.10723,"deltaPressureHpa":0,"currentPressureHpa":907.25,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:00:20.432Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068224,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.05685,"deltaPressureHpa":0,"currentPressureHpa":907.49,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:00:30.259Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068240,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.09668,"deltaPressureHpa":0,"currentPressureHpa":907.22,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:00:36.422Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068256,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11471,"deltaPressureHpa":0,"currentPressureHpa":907.57,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:00:44.357Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068272,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.09184,"deltaPressureHpa":0,"currentPressureHpa":907.28,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:00:56.522Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068288,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.1125,"deltaPressureHpa":0,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:01:04.461Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068304,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.11388,"deltaPressureHpa":0,"currentPressureHpa":907.25,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:01:12.553Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068320,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":7.42,"rHom":13.09,"deltaMagUt":0.07672,"deltaPressureHpa":0.1404,"currentPressureHpa":907.07,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T20:01:24.437Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068336,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":7.42,"rHom":13.09,"deltaMagUt":0.10548,"deltaPressureHpa":0.0765,"currentPressureHpa":907.25,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T20:01:32.371Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068352,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.05867,"deltaPressureHpa":0,"currentPressureHpa":907.78,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:01:38.614Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068368,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.03358,"deltaPressureHpa":0.0019,"currentPressureHpa":907.27,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:01:46.368Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068384,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.06033,"deltaPressureHpa":0.0135,"currentPressureHpa":907.25,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:02:00.913Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068400,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":7.42,"rHom":11.99,"deltaMagUt":0.04739,"deltaPressureHpa":0.1122,"currentPressureHpa":907.18,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T20:02:29.100Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068416,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":7.42,"rHom":13.09,"deltaMagUt":0.11655,"deltaPressureHpa":0.0563,"currentPressureHpa":907.18,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T20:02:49.552Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068432,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.04459,"deltaPressureHpa":0,"currentPressureHpa":907.23,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:03:05.740Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068448,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":7.42,"rHom":13.09,"deltaMagUt":0.0968,"deltaPressureHpa":0.3247,"currentPressureHpa":907.14,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":true,"parityTrace":1,"timestamp":"2026-09-14T20:03:17.588Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068464,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.09482,"deltaPressureHpa":0.0401,"currentPressureHpa":907.09,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:03:25.372Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068480,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.1339,"deltaPressureHpa":0,"currentPressureHpa":907.24,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:03:27.811Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068496,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.12125,"deltaPressureHpa":0,"currentPressureHpa":907.29,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:03:31.800Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068512,"transportMode":"FIELD_OFFLINE","b2Rate":88.99,"b3Rate":6.76,"rHom":13.16,"deltaMagUt":0.04082,"deltaPressureHpa":0,"currentPressureHpa":907.25,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":false,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:03:35.797Z"}
+{"event":"NPU_SLOT_FRAME","session":"Field_Scan","slot":50,"epoch":5068528,"transportMode":"FIELD_OFFLINE","b2Rate":97.11,"b3Rate":6.76,"rHom":14.37,"deltaMagUt":0.1198,"deltaPressureHpa":0,"currentPressureHpa":907.2,"gps":{"lat":46.8979154693201,"lon":-114.04133868735238,"alt":997.6765932096168},"isB2VoidDetected":true,"isB3VoidDetected":false,"parityTrace":1,"timestamp":"2026-09-14T20:03:39.792Z"}
+{
+"SPL07003 Barometer": {
+"values": [
+907.271728515625
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2868041992188
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.3011474609375
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2262573242188
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2894287109375
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.167724609375
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+906.9578857421875
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.0405883789062
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2083129882812
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.101806640625
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.08154296875
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.13037109375
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.1774291992188
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2203369140625
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.22607421875
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2359619140625
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.2195434570312
+]
+}
+}
+{
+"SPL07003 Barometer": {
+"values": [
+907.4961547851562
+]
+}
+}
