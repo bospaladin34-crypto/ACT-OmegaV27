@@ -2,6 +2,7 @@
 #include "../include/git_provenance.hpp"
 #include <iostream>
 #include <cassert>
+#include <array>
 
 using namespace act_omega::vault;
 using namespace act_omega::cabi;
@@ -14,9 +15,9 @@ int main() {
 
     // Test Task 50: USearch 1-bit RaBitQ Hamming calculation
     MMapUsearchEngine usearch(1024);
-    uint8_t q = {0xFF, 0x00, 0xAA, 0x55, 0xF0, 0x0F, 0x33, 0xCC};
-    uint8_t target = {0xFF, 0x00, 0xAA, 0x55, 0xF0, 0x0F, 0x33, 0xCC}; // Exact match
-    float exact_sim = usearch.query_hamming(q, target);
+    std::array<uint8_t, 8> q = {0xFF, 0x00, 0xAA, 0x55, 0xF0, 0x0F, 0x33, 0xCC};
+    std::array<uint8_t, 8> target = {0xFF, 0x00, 0xAA, 0x55, 0xF0, 0x0F, 0x33, 0xCC};
+    float exact_sim = usearch.query_hamming(q.data(), target.data());
     assert(exact_sim == 1.0f);
     std::cout << "TASK 50 PASS: USearch RaBitQ Exact Match Sim: " << exact_sim << " (< 1 us)" << std::endl;
 
@@ -26,7 +27,7 @@ int main() {
     bool ok = git_engine.commit_state_tree("[ACT-Omega v27.0] In-Memory Verification Commit", &commit);
     assert(ok == true);
     assert(commit.commit_epoch == 0);
-    std::cout << "TASK 51 PASS: In-Memory Git DAG Commit Created (Epoch: " << commit.commit_epoch << ", Branch: " << commit.branch_ref << ")" << std::endl;
+    std::cout << "TASK 51 PASS: In-Memory Git DAG Commit Created (Epoch: " << commit.commit_epoch << ", Branch: " << commit.branch_ref.data() << ")" << std::endl;
 
     std::cout << "\n==================================================================" << std::endl;
     std::cout << " ALL TASKS 49, 50, AND 51 INVARIANTS VERIFIED SUCCESSFULLY        " << std::endl;
