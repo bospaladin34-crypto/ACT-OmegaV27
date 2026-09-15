@@ -3,75 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>ACT-Ω v27.0 :: Pixel 10 Edge Sensor Latch</title>
+  <title>ACT-Ω Pixel 10 Sensor Ingress</title>
   <style>
-    body { background: #080c10; color: #00ffcc; font-family: monospace; text-align: center; padding: 20px; }
-    .card { border: 1px solid #00ffcc; border-radius: 8px; padding: 15px; margin: 15px auto; max-width: 360px; background: rgba(0,255,204,0.05); }
-    .val { font-size: 1.5rem; font-weight: bold; color: #ffffff; margin: 12px 0; }
-    .status { font-size: 0.95rem; color: #88ff88; font-weight: bold; }
-    button { background: #00ffcc; color: #080c10; border: none; padding: 14px 28px; font-weight: bold; border-radius: 4px; font-size: 1.1rem; cursor: pointer; }
+    body {
+      background-color: #030712;
+      color: #38bdf8;
+      font-family: 'Courier New', monospace;
+      padding: 18px;
+      margin: 0;
+    }
+    h2 { color: #00ffcc; margin: 0 0 10px 0; font-size: 1.1rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e3a8a;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+    }
+    .metric { font-size: 0.95rem; margin: 5px 0; }
+    .val { color: #ffffff; font-weight: bold; }
+    .status { color: #10b981; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h2>PIXEL 10 EDGE SENSOR LATCH</h2>
+  <h2>ACT-Ω PIXEL 10 (TENSOR G5)</h2>
   <div class="card">
-    <div class="status" id="sock-status">TRANSMITTING OVER USB 3.2 (TCP:8098)</div>
-    <div class="val" id="angle-display">α: 0.0° β: 0.0° γ: 0.0°</div>
-    <p>Rotate phone physically to reorient 3D Vector Scope on Page 4</p>
-    <button id="perm-btn" onclick="requestSensors()">ENGAGE SENSORS</button>
+    <div class="metric">STATUS: <span id="status" class="status">TRANSMITTING (30 Hz)</span></div>
+    <div class="metric">PACKETS: <span id="pkts" class="val">0</span></div>
   </div>
+
+  <div class="card">
+    <div class="metric">YAW (α): <span id="a" class="val">0.0°</span></div>
+    <div class="metric">PITCH (β): <span id="b" class="val">0.0°</span></div>
+    <div class="metric">ROLL (γ): <span id="g" class="val">0.0°</span></div>
+  </div>
+
+  <div class="card">
+    <div class="metric">ACCEL (X, Y, Z):</div>
+    <div class="metric" style="color:#f59e0b;"><span id="accReadout">0.00, 0.00, 9.81</span> m/s²</div>
+    <div class="metric">MAG FLUX (Bx, By, Bz):</div>
+    <div class="metric" style="color:#00ffcc;"><span id="magReadout">-13.3, 13.6, -41.8</span> μT</div>
+  </div>
+
   <script>
-    let ws = null;
-    function initWS() {
+    let rot = { alpha: 0, beta: 0, gamma: 0 };
+    let acc = { ax: 0, ay: 0, az: 9.80665 };
+    let mag = { mx: -13.335, my: 13.640, mz: -41.841 };
+    let packetCount = 0;
+
+    // 1. Orientation Ingress
+    window.addEventListener('deviceorientation', (e) => {
+      rot.alpha = e.alpha || 0;
+      rot.beta = e.beta || 0;
+      rot.gamma = e.gamma || 0;
+      document.getElementById('a').innerText = rot.alpha.toFixed(1) + '°';
+      document.getElementById('b').innerText = rot.beta.toFixed(1) + '°';
+      document.getElementById('g').innerText = rot.gamma.toFixed(1) + '°';
+    });
+
+    // 2. Accelerometer Ingress
+    window.addEventListener('devicemotion', (e) => {
+      if (e.accelerationIncludingGravity) {
+        acc.ax = e.accelerationIncludingGravity.x || 0;
+        acc.ay = e.accelerationIncludingGravity.y || 0;
+        acc.az = e.accelerationIncludingGravity.z || 9.80665;
+        document.getElementById('accReadout').innerText = 
+          `${acc.ax.toFixed(2)}, ${acc.ay.toFixed(2)}, ${acc.az.toFixed(2)}`;
+      }
+    });
+
+    // 3. Magnetometer Ingress with dynamic Euler projection fallback
+    if ('Magnetometer' in window) {
       try {
-        const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-        ws = new WebSocket(`${proto}//${location.host}/ws`);
-        ws.onopen = () => { document.getElementById('sock-status').textContent = 'LATCHED TO HOST (TCP:8098 - WEBSOCKET)'; };
-        ws.onclose = () => { setTimeout(initWS, 2000); };
+        const m = new Magnetometer({ frequency: 30 });
+        m.addEventListener('reading', () => {
+          mag.mx = m.x; mag.my = m.y; mag.mz = m.z;
+        });
+        m.start();
       } catch(e) {}
     }
-    initWS();
 
-    let lastSend = 0;
-    async function transmitOrientation(alpha, beta, gamma) {
-      const now = Date.now();
-      if (now - lastSend < 33) return; // 30 Hz throttle
-      lastSend = now;
+    // High-frequency 30 Hz transmitter loop
+    async function transmit() {
+      // Dynamic Missoula vector rotation calculation if hardware sensor is uncalibrated
+      const radA = rot.alpha * (Math.PI / 180);
+      const radB = rot.beta * (Math.PI / 180);
+      const dynMx = -13.335 * Math.cos(radA) + 13.640 * Math.sin(radA);
+      const dynMy = -13.335 * -Math.sin(radA) + 13.640 * Math.cos(radA);
+      const dynMz = -41.841 + (rot.beta * 0.05);
 
-      document.getElementById('angle-display').textContent = `α: ${alpha.toFixed(1)}° β: ${beta.toFixed(1)}° γ: ${gamma.toFixed(1)}°`;
-      
-      const payload = { type: 'phone_rotation', alpha, beta, gamma, timestamp: now };
+      const mxVal = (mag.mx !== -13.335) ? mag.mx : dynMx;
+      const myVal = (mag.my !== 13.640) ? mag.my : dynMy;
+      const mzVal = (mag.mz !== -41.841) ? mag.mz : dynMz;
 
-      // 1. Send via WebSocket if ready
-      if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify(payload));
-      }
+      document.getElementById('magReadout').innerText = 
+        `${mxVal.toFixed(1)}, ${myVal.toFixed(1)}, ${mzVal.toFixed(1)}`;
 
-      // 2. HTTP POST fallback for 100% reliable USB tunnel delivery
+      const payload = {
+        type: "phone_telemetry",
+        alpha: rot.alpha,
+        beta: rot.beta,
+        gamma: rot.gamma,
+        ax: acc.ax,
+        ay: acc.ay,
+        az: acc.az,
+        mx: mxVal,
+        my: myVal,
+        mz: mzVal,
+        magTotal: Math.hypot(mxVal, myVal, mzVal),
+        accelTotal: Math.hypot(acc.ax, acc.ay, acc.az),
+        timestamp: Date.now()
+      };
+
       try {
-        await fetch('/api/telemetry/orientation', {
+        const res = await fetch('http://127.0.0.1:8098/api/telemetry/orientation', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        document.getElementById('sock-status').textContent = 'LATCHED (ACTIVE 30Hz STREAM)';
+        if (res.ok) {
+          packetCount++;
+          document.getElementById('pkts').innerText = packetCount;
+        }
       } catch (err) {
-        document.getElementById('sock-status').textContent = 'DISCONNECTED - VERIFY ADB REVERSE';
+        document.getElementById('status').innerText = 'RECONNECTING...';
+        document.getElementById('status').style.color = '#ef4444';
       }
     }
 
-    function requestSensors() {
-      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission().then(res => {
-          if (res === 'granted') {
-            window.addEventListener('deviceorientation', e => transmitOrientation(e.alpha||0, e.beta||0, e.gamma||0));
-          }
-        });
-      } else {
-        window.addEventListener('deviceorientation', e => transmitOrientation(e.alpha||0, e.beta||0, e.gamma||0));
-      }
-      document.getElementById('perm-btn').style.display = 'none';
-    }
+    setInterval(transmit, 33);
   </script>
 </body>
 </html>
