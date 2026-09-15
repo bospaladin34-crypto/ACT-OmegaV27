@@ -14,3 +14,82 @@ crate-type = ["cdylib", "rlib"]
 [[test]]
 name = "test_invariants"
 harness = false
+[[test]]
+name = "test_benchmarks"
+harness = false
+
+[[test]]
+name = "test_braid_attention"
+harness = false
+
+[[test]]
+name = "test_cognitive_pain"
+harness = false
+
+[[test]]
+name = "test_dream_engine"
+harness = false
+
+[[test]]
+name = "test_eja"
+harness = false
+
+[[test]]
+name = "test_geometric_snapping"
+harness = false
+
+[[test]]
+name = "test_hodge_laplacian"
+harness = false
+
+[[test]]
+name = "test_human_bias_lexicon"
+harness = false
+
+[[test]]
+name = "test_hybrid_encoding_suite"
+harness = false
+
+[[test]]
+name = "test_ingestion"
+harness = false
+
+[[test]]
+name = "test_knot_splicer"
+harness = false
+
+[[test]]
+name = "test_lexicon_interactive"
+harness = false
+
+[[test]]
+name = "test_natural_language"
+harness = false
+
+[[test]]
+name = "test_offload"
+harness = false
+
+[[test]]
+name = "test_recovery"
+harness = false
+
+[[test]]
+name = "test_shaders"
+harness = false
+
+[[test]]
+name = "test_snap_suite"
+harness = false
+
+[[test]]
+name = "test_tokenizer_loom"
+harness = false
+
+[[test]]
+name = "test_transformer"
+harness = false
+
+[[test]]
+name = "test_truth_collapse_gate"
+harness = false
