@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "act_omega_l0_compute"
 version = "27.0.0"
 edition = "2021"
@@ -11,3 +11,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 # Standard library standalone core with optional external FOSS math
+[[test]]
+name = "test_invariants"
+harness = false
