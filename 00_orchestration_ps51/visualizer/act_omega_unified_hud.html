@@ -760,29 +760,115 @@
     const ctx = canvas.getContext("2d");
     let angle = 0;
 
-    function renderScope() {
-      ctx.clearRect(0, 0, 600, 600);
-      ctx.strokeStyle = "#1e293b";
-      ctx.lineWidth = 1;
+    // Global window-attached phone rotation buffer
+      window.phoneRot = { alpha: 0, beta: 0, gamma: 0, latched: false };
 
-      // Radar rings
-      ctx.beginPath(); ctx.arc(300, 300, 100, 0, Math.PI * 2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(300, 300, 200, 0, Math.PI * 2); ctx.stroke();
+      async function pollOrientation() {
+        try {
+          const res = await fetch('/api/telemetry/orientation');
+          if (res.ok) {
+            const d = await res.json();
+            if (d && typeof d.alpha !== 'undefined' && d.alpha !== 0) {
+              window.phoneRot.alpha = Number(d.alpha) || 0;
+              window.phoneRot.beta = Number(d.beta) || 0;
+              window.phoneRot.gamma = Number(d.gamma) || 0;
+              window.phoneRot.latched = true;
+            }
+          }
+        } catch(e) {}
+      }
+      setInterval(pollOrientation, 33);
 
-      // Rotating E8 / Missoula Vector
-      const vx = 300 + Math.cos(angle) * 160;
-      const vy = 300 + Math.sin(angle) * 160;
+      // Global window-attached phone rotation buffer
+      window.phoneRot = { alpha: 0, beta: 0, gamma: 0, latched: false };
 
-      ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(300, 300); ctx.lineTo(vx, vy); ctx.stroke();
+      async function pollOrientation() {
+        try {
+          const res = await fetch('/api/telemetry/orientation');
+          if (res.ok) {
+            const d = await res.json();
+            if (d && typeof d.alpha !== 'undefined' && d.alpha !== 0) {
+              window.phoneRot.alpha = Number(d.alpha) || 0;
+              window.phoneRot.beta = Number(d.beta) || 0;
+              window.phoneRot.gamma = Number(d.gamma) || 0;
+              window.phoneRot.latched = true;
+            }
+          }
+        } catch(e) {}
+      }
+      setInterval(pollOrientation, 33);
 
-      ctx.fillStyle = "#ef4444";
-      ctx.beginPath(); ctx.arc(vx, vy, 6, 0, Math.PI * 2); ctx.fill();
+      // Window-anchored telemetry state
+      window.phoneRot = { alpha: 0, beta: 0, gamma: 0, latched: false };
+      let pollStatus = "CONNECTING...";
 
-      angle += 0.015;
-      requestAnimationFrame(renderScope);
-    }
+      async function pollOrientation() {
+        try {
+          // Explicit target to port 8098 regardless of host page port
+          const targetUrl = (window.location.port === "8098") 
+            ? "/api/telemetry/orientation" 
+            : "http://127.0.0.1:8098/api/telemetry/orientation";
+
+          const res = await fetch(targetUrl);
+          if (res.ok) {
+            const d = await res.json();
+            if (d && typeof d.alpha !== 'undefined') {
+              window.phoneRot.alpha = Number(d.alpha) || 0;
+              window.phoneRot.beta = Number(d.beta) || 0;
+              window.phoneRot.gamma = Number(d.gamma) || 0;
+              window.phoneRot.latched = true;
+              pollStatus = "LATCHED";
+            }
+          } else {
+            pollStatus = "HTTP " + res.status;
+          }
+        } catch(e) {
+          pollStatus = "NET ERR";
+        }
+      }
+      setInterval(pollOrientation, 33); // 30 Hz sync
+
+      function renderScope() {
+        ctx.clearRect(0, 0, 600, 600);
+
+        // Radar Rings
+        ctx.strokeStyle = "#1e3a8a";
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(300, 300, 100, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(300, 300, 200, 0, Math.PI * 2); ctx.stroke();
+
+        const isLatched = Boolean(window.phoneRot && window.phoneRot.latched);
+
+        // Lock angle to phone compass yaw (alpha) in real time
+        let curAngle = isLatched 
+          ? (window.phoneRot.alpha - 90) * (Math.PI / 180)
+          : (angle += 0.015);
+
+        const vx = 300 + Math.cos(curAngle) * 180;
+        const vy = 300 + Math.sin(curAngle) * 180;
+
+        // Dynamic Needle Line
+        ctx.strokeStyle = isLatched ? "#00ffcc" : "#38bdf8";
+        ctx.lineWidth = isLatched ? 4 : 3;
+        ctx.beginPath(); ctx.moveTo(300, 300); ctx.lineTo(vx, vy); ctx.stroke();
+
+        // Vector Tip Bead
+        ctx.fillStyle = isLatched ? "#10b981" : "#ef4444";
+        ctx.beginPath(); ctx.arc(vx, vy, isLatched ? 8 : 6, 0, Math.PI * 2); ctx.fill();
+
+        // Centered Canvas Header Text
+        ctx.font = "bold 15px monospace";
+        ctx.textAlign = "center";
+        ctx.fillStyle = isLatched ? "#00ffcc" : "#94a3b8";
+
+        const text = isLatched 
+          ? `PIXEL 10 LATCHED: α:${window.phoneRot.alpha.toFixed(1)}° β:${window.phoneRot.beta.toFixed(1)}°`
+          : `AWAITING PIXEL 10 [${pollStatus}]`;
+
+        ctx.fillText(text, 300, 45);
+
+        requestAnimationFrame(renderScope);
+      }
     renderScope();
 
             // Model Selection & VRAM Pre-Warming
@@ -1143,5 +1229,25 @@
       }
     }
   </script>
+<script>
+// Task 56 Dynamic 3D Vector Scope Integration
+let phoneRot = { alpha: 0, beta: 0, gamma: 0, latched: false };
+
+async function pollPhoneOrientation() {
+  try {
+    const res = await fetch('/api/telemetry/orientation');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data.alpha !== 'undefined') {
+        phoneRot.alpha = Number(data.alpha) || 0;
+        phoneRot.beta = Number(data.beta) || 0;
+        phoneRot.gamma = Number(data.gamma) || 0;
+        phoneRot.latched = true;
+      }
+    }
+  } catch(e) {}
+}
+setInterval(pollPhoneOrientation, 33); // 30 Hz sync
+</script>
 </body>
 </html>

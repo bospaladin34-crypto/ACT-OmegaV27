@@ -1,3 +1,16 @@
+// Global orientation buffer & broadcast relay for Task 56
+let latestOrientation: any = { alpha: 0.0, beta: 0.0, gamma: 0.0, timestamp: Date.now() };
+let wsClients = new Set<WebSocket>();
+
+function broadcastOrientation(data: any) {
+  latestOrientation = { ...data, timestamp: Date.now() };
+  try {
+    const payload = JSON.stringify({ type: "phone_rotation", ...latestOrientation });
+    for (const client of wsClients) {
+      try { if (client.readyState === 1) client.send(payload); } catch {}
+    }
+  } catch {}
+}
 // server.ts - ACT-Omega v27.0 L2 Deno StateGraph Server & Model Controller
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { snapText } from "./tokenizer_bridge.ts";
@@ -182,7 +195,19 @@ serve(async (req: Request) => {
   }
 
   // API: Live Battery Dumpsys
-  if (url.pathname === "/api/adb/battery") {
+      if (url.pathname === "/api/telemetry/orientation") {
+      if (req.method === "POST") {
+        const body = await req.json();
+        broadcastOrientation(body);
+        return new Response(JSON.stringify({ status: "latched", ...latestOrientation }), {
+          headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+        });
+      }
+      return new Response(JSON.stringify(latestOrientation), {
+        headers: { "content-type": "application/json", "access-control-allow-origin": "*" },
+      });
+    }
+    if (url.pathname === "/api/adb/battery") {
     try {
       const proc = new Deno.Command("adb.exe", { args: ["shell", "dumpsys", "battery"] }).outputSync();
       const stdout = new TextDecoder().decode(proc.stdout);
