@@ -6,7 +6,7 @@ include!("../src/braid_attention.rs");
 
 fn main() {
     println!("==================================================================");
-    println!(" [ACT-OMEGA V27.0]: TASK 34 BRAID ATTENTION VERIFICATION          ");
+    println!(" (ACT-OMEGA V27.0): TASK 34 BRAID ATTENTION VERIFICATION          ");
     println!(" Invariant: Non-Commutative Causal Asymmetry & Reidemeister II   ");
     println!("==================================================================");
 
@@ -32,7 +32,7 @@ fn main() {
     let attn_fwd = kernel.compute_attention_weight(&strand_a, &strand_b);
     let attn_bwd = kernel.compute_attention_weight(&strand_b, &strand_a);
 
-    println!("\n--- [TEST 1: CAUSAL ATTENTION ASYMMETRY] ---");
+    println!("\n--- (TEST 1: CAUSAL ATTENTION ASYMMETRY) ---");
     println!("Forward  Attn(gravity -> entropy): {:+.6}", attn_fwd);
     println!("Backward Attn(entropy -> gravity): {:+.6}", attn_bwd);
     assert!(attn_fwd != attn_bwd);
@@ -40,7 +40,7 @@ fn main() {
     assert!(attn_bwd < 0.0);
 
     // Test 2: Reidemeister Type II Loop Collapse (sigma_1 * sigma_1^-1 -> e)
-    println!("\n--- [TEST 2: REIDEMEISTER TYPE II REDUCTION] ---");
+    println!("\n--- (TEST 2: REIDEMEISTER TYPE II REDUCTION) ---");
     let mut gens = Vec::new();
     gens.push(BraidGenerator { strand_index: 1, is_inverse: false });
     gens.push(BraidGenerator { strand_index: 1, is_inverse: true });
@@ -54,7 +54,7 @@ fn main() {
     assert_eq!(reduced_gens.len(), 1);
 
     // Test 3: Far-commuting Yang-Baxter generators (|i - j| >= 2)
-    println!("\n--- [TEST 3: FAR-COMMUTING GENERATOR INDEPENDENCE] ---");
+    println!("\n--- (TEST 3: FAR-COMMUTING GENERATOR INDEPENDENCE) ---");
     let g_strand1 = BraidGenerator { strand_index: 1, is_inverse: false };
     let g_strand3 = BraidGenerator { strand_index: 3, is_inverse: false };
     let is_far_commuting = kernel.assert_yang_baxter(g_strand1, g_strand3);

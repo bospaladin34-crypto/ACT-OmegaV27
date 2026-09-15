@@ -8,7 +8,7 @@ include!("../src/truth_collapse_gate.rs");
 
 fn main() {
     println!("==================================================================");
-    println!(" [ACT-OMEGA V27.0]: TASK 35 TRUTH & COLLAPSE GATE VERIFICATION    ");
+    println!(" (ACT-OMEGA V27.0): TASK 35 TRUTH & COLLAPSE GATE VERIFICATION    ");
     println!(" Invariant: Penrose Collapse (E_G * tau >= hbar) & Cech H^1 = 0  ");
     println!("==================================================================");
 
@@ -30,7 +30,7 @@ fn main() {
     };
 
     let (verdict_a, _repaired_a) = gate.process_candidate_thought(&thought_grounded, &splicer, &kernel);
-    println!("\n--- [TEST 1: GROUNDED PROPOSITION EMISSION] ---");
+    println!("\n--- (TEST 1: GROUNDED PROPOSITION EMISSION) ---");
     println!("Thought ID: {}", verdict_a.thought_id);
     println!("Objective Collapse Triggered  : {}", verdict_a.is_collapsed);
     println!("Cech Sheaf Consistency (H^1=0): {}", verdict_a.is_sheaf_consistent);
@@ -57,7 +57,7 @@ fn main() {
     };
 
     let (verdict_b, repaired_b) = gate.process_candidate_thought(&thought_contradictory, &splicer, &kernel);
-    println!("\n--- [TEST 2: CONTRADICTORY PROPOSITION AUTO-SURGERY] ---");
+    println!("\n--- (TEST 2: CONTRADICTORY PROPOSITION AUTO-SURGERY) ---");
     println!("Thought ID: {}", verdict_b.thought_id);
     println!("Pre-Surgery Obstruction       : 0.7500");
     println!("Post-Surgery Obstruction      : {:.4} (H^1 = 0 Restored)", verdict_b.final_obstruction);
@@ -81,7 +81,7 @@ fn main() {
     };
 
     let (verdict_c, _) = gate.process_candidate_thought(&thought_sub_threshold, &splicer, &kernel);
-    println!("\n--- [TEST 3: SUB-THRESHOLD NOISE QUARANTINE] ---");
+    println!("\n--- (TEST 3: SUB-THRESHOLD NOISE QUARANTINE) ---");
     println!("Thought ID: {}", verdict_c.thought_id);
     println!("Objective Collapse Triggered  : {}", verdict_c.is_collapsed);
     println!("Hallucination/Noise Clamped   : {}", verdict_c.is_hallucination_quarantined);

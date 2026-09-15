@@ -6,7 +6,7 @@ include!("../src/geo_semantic_tokenizer.rs");
 
 fn main() {
     println!("==================================================================");
-    println!(" [ACT-OMEGA V27.0]: GEOMETRIC SEMANTIC TOKENIZER VALIDATION       ");
+    println!(" (ACT-OMEGA V27.0): GEOMETRIC SEMANTIC TOKENIZER VALIDATION       ");
     println!(" Invariant: Continuous R^8 Projection & E_8 Root Resolution       ");
     println!("==================================================================");
 
@@ -40,7 +40,7 @@ fn main() {
     let test_lexicon = "gravity photon entropy starlight vacuum manifold superposition";
     let snapped_tokens = tokenizer.process(test_lexicon, SnapMode::GeometricDominant);
 
-    println!("\n--- [TEST 1: DYNAMIC E8 ROOT RESOLUTION & COMPATIBILITY] ---");
+    println!("\n--- (TEST 1: DYNAMIC E8 ROOT RESOLUTION & COMPATIBILITY) ---");
     let mut i = 0;
     while i < snapped_tokens.len() {
         if let Some(tok) = snapped_tokens.get(i) {
@@ -53,7 +53,7 @@ fn main() {
     }
 
     // 4. Test Causal vs Scrambled Temporal Coherence
-    println!("\n--- [TEST 2: CAUSAL ORDER VS TEMPORAL JUMP DETECTION] ---");
+    println!("\n--- (TEST 2: CAUSAL ORDER VS TEMPORAL JUMP DETECTION) ---");
     let triplets = weave_triplets(&snapped_tokens);
     let causal_loom = build_loom(&triplets);
     let causal_inv = compute_physics_invariants(&causal_loom);

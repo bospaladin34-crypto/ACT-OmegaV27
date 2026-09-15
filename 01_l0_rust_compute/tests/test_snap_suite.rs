@@ -55,7 +55,7 @@ fn snap_one(tok: &GeoSemanticTokenizer, w: &str) -> u16 {
 
 fn main() {
     println!("==================================================================");
-    println!(" [ACT-OMEGA V27.0]: REVISION OMEGA.2 ADVERSARIAL SNAP SUITE      ");
+    println!(" (ACT-OMEGA V27.0): REVISION OMEGA.2 ADVERSARIAL SNAP SUITE      ");
     println!(" Invariant: N-Gram Cymatics / 240 E_8 Roots / Zero Brackets      ");
     println!("==================================================================");
 

@@ -42,3 +42,5 @@ pub mod e8_root_table {
     use super::geo_semantic_tokenizer::{E8Point, LatticeRoot};
     include!("e8_root_table.rs");
 }
+pub mod ansky_simulator;
+pub mod sheaf_laplacian;
