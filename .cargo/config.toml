@@ -1,0 +1,7 @@
+[target.aarch64-linux-android]
+rustflags = [
+    "-C", "target-cpu=cortex-x4",
+    "-C", "target-feature=+sve,+sve2,+svebitperm,+i8mm,+bf16,+rcpc",
+    "-C", "opt-level=3",
+    "-C", "lto=fat"
+]
