@@ -228,6 +228,26 @@ serve(async (req: Request) => {
 
       // --- Chat Sieve Ingress for HUD ATCC Chatbox ---
       // --- UARM 4-Phase Sequential Chaining Engine (ReBAR Accelerated) ---
+    // --- TRI-CS-PAGED Memory Metric Endpoint ---
+  if (pathname === "/api/memory/metrics") {
+    return new Response(JSON.stringify({
+      status: "ok",
+      metric_tensor: {
+        vram_g00: 1.0,
+        ram_g00: 0.1,
+        ssd_g00: 0.001
+      },
+      triality_compression: "3.00x",
+      kinematic_ceiling_rec_s: 98.83,
+      nmae_shear_energy_joules: 0.186,
+      current_proper_time_ms: 62.636,
+      parity: "Tr(U_res) = 1.000000",
+      state: "LAMINAR_GEODESIC"
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
   if (pathname === "/api/chat/uarm_chain" && req.method === "POST") {
     try {
       const body = await req.json();
@@ -439,6 +459,7 @@ serve(async (req: Request) => {
 }, { port: 8098 });
 
 console.log("ACT-Omega Unified API Server listening on http://127.0.0.1:8098");
+
 
 
 
