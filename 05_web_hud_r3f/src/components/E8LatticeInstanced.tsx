@@ -1,4 +1,4 @@
-﻿import { useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
 

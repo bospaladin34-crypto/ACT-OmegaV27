@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 export function useBraidParser(initialStream: string[] = []) {
   const [rawStream, setRawStream] = useState<string[]>(initialStream);

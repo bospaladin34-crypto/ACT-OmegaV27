@@ -1,4 +1,4 @@
-﻿name: Deploy Sovereign Manifold Web HUD to GitHub Pages
+name: Deploy Sovereign Manifold Web HUD to GitHub Pages
 
 on:
   push:
