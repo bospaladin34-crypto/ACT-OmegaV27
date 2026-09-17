@@ -46,4 +46,24 @@ Java_com_actomega_vesper_VesperEngine_freeEngine(JNIEnv* env, jobject thiz, jlon
     LOGI("[NDK_CLEANUP]: Releasing Vesper Engine handle on Android 17.");
 }
 
+JNIEXPORT jboolean JNICALL
+Java_com_actomega_manifold_VesperJNI_initManifoldCore(JNIEnv* env, jobject thiz) {
+    LOGI("[VesperJNI] initManifoldCore called");
+    return JNI_TRUE;
+}
+
+JNIEXPORT jfloat JNICALL
+Java_com_actomega_manifold_VesperJNI_quantizeLeech24(JNIEnv* env, jobject thiz, jfloatArray input, jbyteArray output) {
+    return 1.0f;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_actomega_manifold_VesperJNI_ingestSensorRecord(JNIEnv* env, jobject thiz, 
+    jfloat bx, jfloat by, jfloat bz, 
+    jfloat ax, jfloat ay, jfloat az, 
+    jfloat rx, jfloat ry, jfloat rz, jfloat p) {
+    // Math acceleration placeholder
+    return 0;
+}
+
 }

@@ -11,5 +11,5 @@ object VesperJNI {
 
     external fun initManifoldCore(): Boolean
     external fun quantizeLeech24(input: FloatArray, output: ByteArray): Float
-    external fun ingestSensorRecord(bx: Float, by: Float, bz: Float, p: Float): Int
+    external fun ingestSensorRecord(bx: Float, by: Float, bz: Float, ax: Float, ay: Float, az: Float, rx: Float, ry: Float, rz: Float, p: Float): Int
 }

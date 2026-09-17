@@ -28,7 +28,8 @@
         android:extractNativeLibs="false"
         android:hardwareAccelerated="true"
         android:label="ACT-Omega Cockpit"
-        android:theme="@android:style/Theme.Material.NoActionBar" >
+        android:theme="@android:style/Theme.Material.NoActionBar"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name="com.actomega.manifold.MainActivity"
             android:exported="true" >

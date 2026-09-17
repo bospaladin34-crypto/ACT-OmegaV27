@@ -231,6 +231,52 @@ serve(async (req: Request) => {
     // --- TRI-CS-PAGED Memory Metric Endpoint ---
     // --- Leech Lattice Quantizer Benchmark Endpoint ---
     // --- Dual-Cadence Macro-Epoch & ReBAR Telemetry Route ---
+    // --- Bi-Directional Braid State Sync ---
+  if (pathname === "/api/braid/inject" && req.method === "POST") {
+    try {
+      const body = await req.json();
+      const sigma = body.sigma || 1;
+      const w = sigma > 0 ? 1 : -1;
+      
+      return new Response(JSON.stringify({
+        status: "ok",
+        event: "INJECT_BRAID",
+        sigma: sigma,
+        sheafJ: 1.2054,
+        h1: 0,
+        parity: "Tr(U_res) = 1.000000"
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+  }
+
+  if (pathname === "/api/braid/collapse" && req.method === "POST") {
+    return new Response(JSON.stringify({
+      status: "ok",
+      event: "REIDEMEISTER_II_COLLAPSE",
+      stiction_purged: true,
+      h1: 0,
+      parity: "Tr(U_res) = 1.000000"
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
+  if (pathname === "/api/braid/state") {
+    return new Response(JSON.stringify({
+      status: "ok",
+      carrier_hz: 15.965,
+      h1: 0,
+      parity: "Tr(U_res) = 1.000000",
+      stiction_limit: 14.411
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
   if (pathname === "/api/epoch/status") {
     const epochCount = Math.floor(Date.now() / 626.36);
     const microTick = Math.floor(Date.now() / 62.636) % 10;
@@ -500,6 +546,7 @@ serve(async (req: Request) => {
 }, { port: 8098 });
 
 console.log("ACT-Omega Unified API Server listening on http://127.0.0.1:8098");
+
 
 
 

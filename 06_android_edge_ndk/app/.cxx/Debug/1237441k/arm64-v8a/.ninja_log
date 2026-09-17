@@ -1,3 +1,5 @@
 # ninja log v5
 0	113	8113264846975672	CMakeFiles/vesper_ffi.dir/vesper_jni.cpp.o	548f5ddb60b0ac50
 114	197	8113264847790760	C:/sovereign_manifold_v27/06_android_edge_ndk/app/build/intermediates/cxx/Debug/1237441k/obj/arm64-v8a/libvesper_ffi.so	d15cbc4c569956a6
+11	2010	8113297605978776	CMakeFiles/vesper_ffi.dir/vesper_jni.cpp.o	548f5ddb60b0ac50
+2011	4615	8113297629677187	C:/sovereign_manifold_v27/06_android_edge_ndk/app/build/intermediates/cxx/Debug/1237441k/obj/arm64-v8a/libvesper_ffi.so	d15cbc4c569956a6

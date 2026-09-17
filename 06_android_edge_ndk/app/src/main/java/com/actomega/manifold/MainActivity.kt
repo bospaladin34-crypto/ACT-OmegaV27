@@ -8,6 +8,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -21,17 +28,58 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.sqrt
+import kotlin.math.*
 
 class MainActivity : ComponentActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var magSensor: Sensor? = null
+    private var rotationSensor: Sensor? = null
 
     private val bAbsState = mutableFloatStateOf(45.91f)
     private val b2RateState = mutableFloatStateOf(88.99f)
     private val writheState = mutableIntStateOf(0)
     private val activeStrandsState = mutableIntStateOf(0)
     private val historyPoints = mutableStateListOf<Float>()
+    
+    // Euler angles
+    private val pitchState = mutableFloatStateOf(0f)
+    private val rollState = mutableFloatStateOf(0f)
+    private val yawState = mutableFloatStateOf(0f)
+    
+    // Networking
+    private val client = OkHttpClient()
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
+
+    private fun postBraidInject(sigma: Int) {
+        ioScope.launch {
+            try {
+                val body = "{\"sigma\": $sigma}".toRequestBody(jsonMediaType)
+                val request = Request.Builder()
+                    .url("http://127.0.0.1:8098/api/braid/inject")
+                    .post(body)
+                    .build()
+                client.newCall(request).execute().close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun postBraidCollapse() {
+        ioScope.launch {
+            try {
+                val body = "{}".toRequestBody(jsonMediaType)
+                val request = Request.Builder()
+                    .url("http://127.0.0.1:8098/api/braid/collapse")
+                    .post(body)
+                    .build()
+                client.newCall(request).execute().close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,9 +87,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         magSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-        magSensor?.let {
-            sensorManager.registerListener(this, it, 10000)
-        }
+        rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        
+        magSensor?.let { sensorManager.registerListener(this, it, 10000) }
+        rotationSensor?.let { sensorManager.registerListener(this, it, 10000) }
 
         setContent {
             MaterialTheme(colorScheme = darkColorScheme()) {
@@ -55,14 +104,19 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                         writhe = writheState.intValue,
                         strands = activeStrandsState.intValue,
                         history = historyPoints,
+                        pitch = pitchState.floatValue,
+                        roll = rollState.floatValue,
+                        yaw = yawState.floatValue,
                         onInjectBraid = { sigma ->
                             activeStrandsState.intValue += 1
                             writheState.intValue += if (sigma > 0) 1 else -1
+                            postBraidInject(sigma)
                         },
                         onCollapse = {
                             if (activeStrandsState.intValue >= 2) {
                                 activeStrandsState.intValue -= 2
                             }
+                            postBraidCollapse()
                         }
                     )
                 }
@@ -71,7 +125,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-                event?.let {
+        event?.let {
             if (it.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
                 val bx: Float = it.values[0]
                 val by: Float = it.values[1]
@@ -83,8 +137,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
                 if (historyPoints.size > 80) historyPoints.removeAt(0)
                 historyPoints.add(bAbs)
-
-                try { VesperJNI.ingestSensorRecord(bx, by, bz, 1013.25f) } catch (_: Throwable) {}
+            } else if (it.sensor.type == Sensor.TYPE_ROTATION_VECTOR) {
+                val rotationMatrix = FloatArray(9)
+                SensorManager.getRotationMatrixFromVector(rotationMatrix, it.values)
+                val orientationAngles = FloatArray(3)
+                SensorManager.getOrientation(rotationMatrix, orientationAngles)
+                
+                yawState.floatValue = orientationAngles[0]
+                pitchState.floatValue = orientationAngles[1]
+                rollState.floatValue = orientationAngles[2]
             }
         }
     }
@@ -104,6 +165,9 @@ fun SovereignCockpitScreen(
     writhe: Int,
     strands: Int,
     history: List<Float>,
+    pitch: Float,
+    roll: Float,
+    yaw: Float,
     onInjectBraid: (Int) -> Unit,
     onCollapse: () -> Unit
 ) {
@@ -169,6 +233,83 @@ fun SovereignCockpitScreen(
                 }
             }
         }
+        
+        item {
+            Text("3D DIPOLE GIMBAL", fontSize = 11.sp, color = Color(0xFF94A3B8), fontFamily = FontFamily.Monospace)
+            Surface(
+                modifier = Modifier.fillMaxWidth().height(160.dp).border(1.dp, Color(0xFF164E63), RoundedCornerShape(8.dp)),
+                color = Color(0xFF040A14)
+            ) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val radius = size.height * 0.4f
+                    val cx = size.width / 2f
+                    val cy = size.height / 2f
+                    
+                    val cxAngle = cos(yaw)
+                    val sxAngle = sin(yaw)
+                    val cyAngle = cos(pitch)
+                    val syAngle = sin(pitch)
+                    val czAngle = cos(roll)
+                    val szAngle = sin(roll)
+                    
+                    // Simple rotation function
+                    fun rotate3D(x: Float, y: Float, z: Float): Pair<Float, Float> {
+                        // Rotate X
+                        val y1 = y * cxAngle - z * sxAngle
+                        val z1 = y * sxAngle + z * cxAngle
+                        // Rotate Y
+                        val x2 = x * cyAngle + z1 * syAngle
+                        val z2 = -x * syAngle + z1 * cyAngle
+                        // Rotate Z
+                        val x3 = x2 * czAngle - y1 * szAngle
+                        val y3 = x2 * szAngle + y1 * czAngle
+                        
+                        return Pair(cx + x3 * radius, cy + y3 * radius)
+                    }
+                    
+                    // Draw latitudes
+                    val numLats = 8
+                    val numLons = 12
+                    
+                    for (i in 0..numLats) {
+                        val theta = PI * i / numLats
+                        val z = cos(theta).toFloat()
+                        val r = sin(theta).toFloat()
+                        
+                        val path = Path()
+                        for (j in 0..numLons) {
+                            val phi = 2 * PI * j / numLons
+                            val x = (r * cos(phi)).toFloat()
+                            val y = (r * sin(phi)).toFloat()
+                            val (px, py) = rotate3D(x, y, z)
+                            
+                            if (j == 0) path.moveTo(px, py) else path.lineTo(px, py)
+                        }
+                        drawPath(path, Color(0x6606B6D4), style = Stroke(width = 1f))
+                    }
+                    
+                    // Draw longitudes
+                    for (j in 0 until numLons) {
+                        val phi = 2 * PI * j / numLons
+                        val nx = cos(phi).toFloat()
+                        val ny = sin(phi).toFloat()
+                        
+                        val path = Path()
+                        for (i in 0..numLats) {
+                            val theta = PI * i / numLats
+                            val z = cos(theta).toFloat()
+                            val r = sin(theta).toFloat()
+                            val x = r * nx
+                            val y = r * ny
+                            
+                            val (px, py) = rotate3D(x, y, z)
+                            if (i == 0) path.moveTo(px, py) else path.lineTo(px, py)
+                        }
+                        drawPath(path, Color(0x6606B6D4), style = Stroke(width = 1f))
+                    }
+                }
+            }
+        }
 
         item {
             Text("REAL-TIME B_tor WAVEFORM (100 Hz)", fontSize = 11.sp, color = Color(0xFF94A3B8), fontFamily = FontFamily.Monospace)
@@ -218,5 +359,3 @@ fun SovereignCockpitScreen(
         }
     }
 }
-
-

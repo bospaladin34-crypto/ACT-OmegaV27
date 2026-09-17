@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-32:12
-INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-32:12
-INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-32:12
-INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-32:12
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-33:12
+INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-33:12
+INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-33:12
+INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:2:1-33:12
 MERGED from [androidx.activity:activity:1.9.2] C:\Users\Nbell\.gradle\caches\9.0.0\transforms\86edd66618d32a803748b8b688b64d0d\transformed\jetified-activity-1.9.2\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material3:material3-android:1.3.0] C:\Users\Nbell\.gradle\caches\9.0.0\transforms\8cc73d83c6e1ad0dadbde2b4f418c1c4\transformed\jetified-material3-release\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\Nbell\.gradle\caches\9.0.0\transforms\16c75a4478d761b7d6fe2c5c786e5bb3\transformed\jetified-savedstate-ktx-1.2.1\AndroidManifest.xml:17:1-22:12
@@ -81,8 +81,8 @@ ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidMan
 	android:name
 		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:10:22-82
 application
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:12:5-31:19
-INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:12:5-31:19
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:12:5-32:19
+INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:12:5-32:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Nbell\.gradle\caches\9.0.0\transforms\27f2a92c1305ee1bacd32f1790c6d6bf\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Nbell\.gradle\caches\9.0.0\transforms\27f2a92c1305ee1bacd32f1790c6d6bf\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.lifecycle:lifecycle-process:2.8.5] C:\Users\Nbell\.gradle\caches\9.0.0\transforms\8f5d35656154161a2734c13e7d03d4df\transformed\jetified-lifecycle-process-2.8.5\AndroidManifest.xml:23:5-33:19
@@ -106,31 +106,33 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Nb
 	android:allowBackup
 		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:14:9-36
 	android:theme
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:16:9-66
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:17:9-66
+	android:usesCleartextTraffic
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:16:9-44
 activity#com.actomega.manifold.MainActivity
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:18:9-25:20
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:19:9-26:20
 	android:exported
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:20:13-36
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:21:13-36
 	android:name
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:19:13-41
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:20:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:21:13-24:29
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:22:13-25:29
 action#android.intent.action.MAIN
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:22:17-69
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:23:17-69
 	android:name
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:22:25-66
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:23:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:23:17-77
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:24:17-77
 	android:name
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:23:27-74
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:24:27-74
 service#com.actomega.manifold.ManifoldEdgeService
-ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:27:9-30:40
+ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:28:9-31:40
 	android:exported
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:30:13-37
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:31:13-37
 	android:foregroundServiceType
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:29:13-55
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:30:13-55
 	android:name
-		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:28:13-48
+		ADDED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml:29:13-48
 uses-sdk
 INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\sovereign_manifold_v27\06_android_edge_ndk\app\src\main\AndroidManifest.xml

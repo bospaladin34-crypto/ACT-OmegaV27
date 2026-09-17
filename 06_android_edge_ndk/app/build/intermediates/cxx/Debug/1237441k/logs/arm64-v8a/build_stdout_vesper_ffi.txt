@@ -1,3 +1,2 @@
 ninja: Entering directory `C:\sovereign_manifold_v27\06_android_edge_ndk\app\.cxx\Debug\1237441k\arm64-v8a'
-[1/2] Building CXX object CMakeFiles/vesper_ffi.dir/vesper_jni.cpp.o
-[2/2] Linking CXX shared library C:\sovereign_manifold_v27\06_android_edge_ndk\app\build\intermediates\cxx\Debug\1237441k\obj\arm64-v8a\libvesper_ffi.so
+ninja: no work to do.
