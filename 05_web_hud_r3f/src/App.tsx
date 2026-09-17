@@ -22,7 +22,7 @@ export default function App() {
       </header>
 
       <div style={{ flex: 1, position: 'relative' }}>
-        <Canvas camera={{ position:, fov: 55 }}>
+        <Canvas camera={{ fov: 55 }}>
           <color attach="background" args={['#030712']} />
           <ambientLight intensity={0.6} />
           <E8LatticeInstanced />

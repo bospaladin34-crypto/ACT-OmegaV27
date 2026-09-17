@@ -33,7 +33,7 @@ export function E8LatticeInstanced() {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, 240]}>
-      <sphereGeometry args={} />
+      <sphereGeometry />
       <meshBasicMaterial color={0x22d3ee} wireframe />
     </instancedMesh>
   );
