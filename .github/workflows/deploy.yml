@@ -32,7 +32,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: ./05_web_hud_r3f
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build Static Web App
         working-directory: ./05_web_hud_r3f
@@ -49,3 +49,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
