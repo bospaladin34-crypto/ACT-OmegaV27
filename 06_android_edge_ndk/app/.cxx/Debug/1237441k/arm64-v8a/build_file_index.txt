@@ -1,0 +1,1 @@
+C:\sovereign_manifold_v27\06_android_edge_ndk\cpp\CMakeLists.txt

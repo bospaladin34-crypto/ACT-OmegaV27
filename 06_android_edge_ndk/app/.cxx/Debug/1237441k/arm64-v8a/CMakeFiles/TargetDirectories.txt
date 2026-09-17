@@ -1,0 +1,3 @@
+C:/sovereign_manifold_v27/06_android_edge_ndk/app/.cxx/Debug/1237441k/arm64-v8a/CMakeFiles/vesper_ffi.dir
+C:/sovereign_manifold_v27/06_android_edge_ndk/app/.cxx/Debug/1237441k/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/sovereign_manifold_v27/06_android_edge_ndk/app/.cxx/Debug/1237441k/arm64-v8a/CMakeFiles/rebuild_cache.dir

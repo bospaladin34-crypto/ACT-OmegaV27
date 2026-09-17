@@ -17,3 +17,5 @@ target_link_libraries(vesper_ffi
     android
     log
 )
+
+target_link_options(vesper_ffi PRIVATE "-Wl,-z,max-page-size=16384")

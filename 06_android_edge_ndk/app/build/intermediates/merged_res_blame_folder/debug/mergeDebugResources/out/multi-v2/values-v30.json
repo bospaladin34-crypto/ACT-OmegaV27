@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.actomega.manifold.app-mergeDebugResources-41:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Nbell\\.gradle\\caches\\9.0.0\\transforms\\a6043e90edc9faca46947212c1dc8851\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}

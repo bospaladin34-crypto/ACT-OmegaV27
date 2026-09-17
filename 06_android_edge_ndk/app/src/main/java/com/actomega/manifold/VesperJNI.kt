@@ -1,0 +1,15 @@
+package com.actomega.manifold
+
+object VesperJNI {
+    init {
+        try {
+            System.loadLibrary("vesper_ffi")
+        } catch (e: Throwable) {
+            // Fallback for simulation mode
+        }
+    }
+
+    external fun initManifoldCore(): Boolean
+    external fun quantizeLeech24(input: FloatArray, output: ByteArray): Float
+    external fun ingestSensorRecord(bx: Float, by: Float, bz: Float, p: Float): Int
+}

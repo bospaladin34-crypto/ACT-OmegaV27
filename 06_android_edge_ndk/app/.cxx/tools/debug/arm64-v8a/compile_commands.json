@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/sovereign_manifold_v27/06_android_edge_ndk/app/.cxx/Debug/1237441k/arm64-v8a",
+  "command": "C:\\Users\\Nbell\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=aarch64-none-linux-android30 --sysroot=C:/Users/Nbell/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dvesper_ffi_EXPORTS -IC:/sovereign_manifold_v27/06_android_edge_ndk/cpp -IC:/sovereign_manifold_v27/06_android_edge_ndk/cpp/../../02_l1_cpp23_cabi/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -fno-limit-debug-info  -fPIC -std=gnu++2b -o CMakeFiles\\vesper_ffi.dir\\vesper_jni.cpp.o -c C:\\sovereign_manifold_v27\\06_android_edge_ndk\\cpp\\vesper_jni.cpp",
+  "file": "C:\\sovereign_manifold_v27\\06_android_edge_ndk\\cpp\\vesper_jni.cpp"
+}
+]

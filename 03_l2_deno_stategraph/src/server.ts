@@ -336,7 +336,7 @@ serve(async (req: Request) => {
           model: "VESPER-RESEARCH:latest",
           prompt: "Context: " + p1Data.response + "\nPolicy: " + p2Data.response + "\nSynthesize a clear, direct answer to: " + userPrompt,
           stream: false,
-          options: { num_predict: 180, temperature: 0.4 }
+          options: { num_predict: 512, temperature: 0.4 }
         })
       });
       const p4Data = p4Res.ok ? await p4Res.json() : { response: "Synthesis complete." };
@@ -500,6 +500,7 @@ serve(async (req: Request) => {
 }, { port: 8098 });
 
 console.log("ACT-Omega Unified API Server listening on http://127.0.0.1:8098");
+
 
 
 

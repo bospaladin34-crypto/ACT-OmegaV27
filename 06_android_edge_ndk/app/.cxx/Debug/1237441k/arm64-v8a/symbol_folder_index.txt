@@ -1,0 +1,1 @@
+C:\sovereign_manifold_v27\06_android_edge_ndk\app\build\intermediates\cxx\Debug\1237441k\obj\arm64-v8a
