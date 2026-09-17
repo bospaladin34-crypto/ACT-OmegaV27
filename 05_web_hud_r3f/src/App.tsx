@@ -47,7 +47,7 @@ export default function App() {
         <Canvas camera={{ fov: 55 }}>
           <color attach="background" args={['#030712']} />
           <ambientLight intensity={0.6} />
-          <E8LatticeInstanced />
+          <E8LatticeInstanced euler={telemetry} />
           <OrbitControls />
         </Canvas>
 
