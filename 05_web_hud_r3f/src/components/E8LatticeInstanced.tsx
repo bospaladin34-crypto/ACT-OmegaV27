@@ -4,27 +4,29 @@ import * as THREE from 'three';
 
 const TAU_S = 0.062636;
 
-interface Props {
-  euler?: { alpha: number; beta: number; gamma: number } | null;
-}
-
-export function E8LatticeInstanced({ euler }: Props) {
+export function E8LatticeInstanced() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const acc = useRef(0);
+
+  const roots = useMemo(() => {
+    const arr = new Float32Array(240 * 3);
+    for (let i = 0; i < 240; i++) {
+      const phi = (i / 240) * Math.PI * 2;
+      const theta = (i % 16) * (Math.PI / 8);
+      arr[i * 3] = Math.cos(phi) * Math.sin(theta) * 2.0;
+      arr[i * 3 + 1] = Math.sin(phi) * Math.sin(theta) * 2.0;
+      arr[i * 3 + 2] = Math.cos(theta) * 2.0;
+    }
+    return arr;
+  }, []);
 
   useFrame((_, delta) => {
     acc.current += delta;
     if (acc.current >= TAU_S) {
       acc.current %= TAU_S;
       if (meshRef.current) {
-        if (euler && (euler.alpha !== 0 || euler.beta !== 0 || euler.gamma !== 0)) {
-          // Direct physical gimbal binding from phone
-          meshRef.current.rotation.y = THREE.MathUtils.degToRad(euler.alpha);
-          meshRef.current.rotation.x = THREE.MathUtils.degToRad(euler.beta);
-          meshRef.current.rotation.z = THREE.MathUtils.degToRad(euler.gamma);
-        } else {
-          meshRef.current.rotation.y += 0.015;
-        }
+        meshRef.current.rotation.y += 0.015;
+        meshRef.current.rotation.x += 0.008;
       }
     }
   });

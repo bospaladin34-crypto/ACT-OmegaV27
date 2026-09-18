@@ -769,6 +769,10 @@
         <span class="status-val">Missoula B_tor (-41.84 &mu;T)</span>
       </div>
     </div>
+      <div id="detached-hud-latch-box" style="display:inline-flex;align-items:center;gap:8px;margin-left:auto;">
+      <span id="detached-hud-badge" style="font-size:11px;color:#7a8fa6;border:1px solid rgba(0,229,255,0.3);padding:3px 8px;border-radius:4px;">DETACHED HUD: <b id="detached-hud-status" style="color:#ffd700;">STANDBY</b></span>
+      <button id="btn-popout-hud" onclick="openDetachedHud()" style="background:rgba(0,229,255,0.15);border:1px solid #00e5ff;color:#00e5ff;font-family:monospace;font-size:11px;font-weight:bold;padding:4px 10px;border-radius:4px;cursor:pointer;">POP OUT HUD</button>
+    </div>
   </header>
 
   <!-- Multi-Page Navigation Bar -->
@@ -2163,6 +2167,34 @@ setInterval(pollPhoneOrientation, 33); // 30 Hz sync
   setTimeout(pollModelStatus, 500);
 })();
 </script>
+  <script>
+    function openDetachedHud() {
+      window.open("/hud", "ActOmegaDetachedHud", "width=1150,height=760,menubar=no,toolbar=no,location=no,status=no,resizable=yes");
+    }
+    const hudSyncChannel = new BroadcastChannel("act_omega_hud_sync");
+    function handleRemoteHudNavigation(tabIndex) {
+      console.log("[Master Cockpit] Remote switch commanded to Tab:", tabIndex);
+      if (typeof switchTab === "function") {
+        switchTab(tabIndex);
+      } else if (typeof selectTab === "function") {
+        selectTab(tabIndex);
+      } else {
+        const tabs = document.querySelectorAll(".nav-tab, .tab-btn, [data-tab]");
+        if (tabs && tabs[tabIndex - 1]) tabs[tabIndex - 1].click();
+      }
+      const statusEl = document.getElementById("detached-hud-status");
+      if (statusEl) {
+        statusEl.textContent = "COMMANDED TAB " + tabIndex;
+        statusEl.style.color = "#00ffaa";
+      }
+    }
+    hudSyncChannel.onmessage = (e) => {
+      if (e.data && e.data.type === "NAVIGATE_COCKPIT_TAB") handleRemoteHudNavigation(e.data.targetTab);
+    };
+    setInterval(() => {
+      hudSyncChannel.postMessage({ type: "COCKPIT_HEARTBEAT", timestamp: Date.now() });
+    }, 2000);
+  </script>
 </body>
 </html>
 

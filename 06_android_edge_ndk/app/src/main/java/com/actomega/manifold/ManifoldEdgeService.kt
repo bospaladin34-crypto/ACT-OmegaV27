@@ -6,6 +6,8 @@ import android.hardware.*
 import android.os.IBinder
 import android.util.Log
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -89,9 +91,14 @@ class ManifoldEdgeService : Service(), SensorEventListener {
                     az = it.values[2]
                 }
                 Sensor.TYPE_ROTATION_VECTOR -> {
-                    rx = it.values[0]
-                    ry = it.values[1]
-                    rz = it.values[2]
+                    val rotMatrix = FloatArray(9)
+                    SensorManager.getRotationMatrixFromVector(rotMatrix, it.values)
+                    val orientation = FloatArray(3)
+                    SensorManager.getOrientation(rotMatrix, orientation)
+                    
+                    rx = Math.toDegrees(orientation[0].toDouble()).toFloat() // yaw
+                    ry = Math.toDegrees(orientation[1].toDouble()).toFloat() // pitch
+                    rz = Math.toDegrees(orientation[2].toDouble()).toFloat() // roll
                 }
                 Sensor.TYPE_PRESSURE -> {
                     p = it.values[0]
@@ -117,6 +124,22 @@ class ManifoldEdgeService : Service(), SensorEventListener {
         // Send JSON over WebSocket
         val json = "{\"bx\":${bx},\"by\":${by},\"bz\":${bz},\"ax\":${ax},\"ay\":${ay},\"az\":${az},\"rx\":${rx},\"ry\":${ry},\"rz\":${rz},\"p\":${p}}"
         webSocket?.send(json)
+
+        // Send JSON over HTTP POST
+        executor.execute {
+            try {
+                val mediaType = "application/json; charset=utf-8".toMediaType()
+                val orientationJson = "{\"alpha\":${rx},\"beta\":${ry},\"gamma\":${rz}}"
+                val body = orientationJson.toRequestBody(mediaType)
+                val request = Request.Builder()
+                    .url("http://127.0.0.1:8098/api/telemetry/orientation")
+                    .post(body)
+                    .build()
+                client.newCall(request).execute().close()
+            } catch (e: Exception) {
+                // Ignore transient errors
+            }
+        }
 
         // Send binary over UDP
         executor.execute {
