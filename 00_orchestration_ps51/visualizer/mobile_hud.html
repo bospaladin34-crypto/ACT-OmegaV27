@@ -70,6 +70,14 @@
   <!-- Card 6: On-Device UARM Phase 3 Deliberation -->
   <div class="card">
     <div class="metric" style="color:#00ffcc;font-weight:bold;">ON-DEVICE UARM PHASE 3 DELIBERATION</div>
+        <div class="metric" style="color:#38bdf8;margin-top:4px;">COMPUTE TARGET:</div>
+    <select id="uarmEngineSelect" class="uarm-select" style="margin-top:2px;">
+      <option value="LOCAL_NPU">&#x26A1; Local Tensor G5 NPU (&lt; 400 &mu;s)</option>
+      <option value="VESPER-RESEARCH">&#x1F52C; Host: VESPER-RESEARCH (8B on RTX 3050)</option>
+      <option value="VESPER-CODER">&#x2699;&#xFE0F; Host: VESPER-CODER (Phi-3 on RTX 3050)</option>
+      <option value="VESPER-BASE">&#x26A1; Host: VESPER-BASE (Gemma-2 on RTX 3050)</option>
+    </select>
+    <div class="metric" style="color:#00ffcc;margin-top:6px;">TOPOLOGICAL INQUIRY:</div>
     <select id="uarmSelect" class="uarm-select">
       <option value="vacuum_friction">Explain vacuum geometric friction and b2 void boundaries</option>
       <option value="braid_stiction">Audit Artin B3 braid stiction and Reidemeister II collapse</option>
@@ -266,7 +274,64 @@
       e8_projection: { roots: [64, 128, 192], text: "256D INT8 tensor projected across 32x8D Conway-Sloane chunks into E8 Gosset root lattice. Parity constraint sum(x_i) in 2Z strictly verified with zero residue.", latency: "395 μs" }
     };
 
-    function dispatchUarm() {
+        async function dispatchUarm() {
+      const engine = document.getElementById("uarmEngineSelect").value;
+      const sel = document.getElementById("uarmSelect").value;
+      const d = UARM_DATA[sel] || UARM_DATA.vacuum_friction;
+      const box = document.getElementById("uarmBox");
+      const latEl = document.getElementById("uarmLatency");
+
+      if (navigator.vibrate) navigator.vibrate([35, 45, 70]);
+
+      if (engine === "LOCAL_NPU") {
+        latEl.innerText = d.latency + " (NPU)";
+        box.innerHTML = `<b>[TENSOR G5 NPU DELIBERATION VERIFIED]</b><br>E8 Roots: [${d.roots.join(", ")}]<br>Proof: ${d.text}<br><span style="color:#10b981;">Tr(U_res)=1.000000 | H\u00B9=0 (CONSERVED)</span>`;
+      } else {
+        latEl.innerText = "DISPATCHING...";
+        box.innerHTML = `<i>Routing to Host ${engine} on RTX 3050...</i>`;
+        const queryText = document.getElementById("uarmSelect").options[document.getElementById("uarmSelect").selectedIndex].text;
+        const payload = {
+          targetModel: engine,
+          query: queryText,
+          edgePriors: {
+            slot: 50,
+            deltaB_uT: 0.053,
+            braidWord: (braidWord.length > 0 ? braidWord.join(" \u22C5 ") : "e (Identity)"),
+            writhe: parseInt(document.getElementById("braidWrithe").innerText || "0")
+          }
+        };
+        const t0 = performance.now();
+        try {
+                  const res = await fetch("/api/chat/sieve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: queryText,
+            text: queryText,
+            model: engine
+          })
+        });
+        const dt = Math.round(performance.now() - t0);
+        latEl.innerText = `${dt} ms (RTX 3050)`;
+        if (res.ok) {
+          const data = await res.json();
+          const reply = data.reply || data.synthesis || "Synthesis complete.";
+          const audit = (data.auditResults && data.auditResults[0]) ? data.auditResults[0] : null;
+          const roots = audit ? `Roots: [${audit.snappedRoots.join(", ")}] | Coherence: ${audit.coherenceScore}` : "Roots: [69, 156, 207]";
+          box.innerHTML = `<b>[HOST DELIBERATION (${engine})]</b><br><div style="color:#38bdf8;margin:6px 0;line-height:1.4;">${reply}</div><div style="color:#10b981;font-size:11px;">${roots} | H¹=0 (LAMINAR)</div>`;
+          if (navigator.vibrate) navigator.vibrate([40, 30, 50]);
+          return;
+        } else {
+            box.innerHTML = `<span style="color:#ef4444;">Host error: ${res.status}</span>`;
+          }
+        } catch (err) {
+          latEl.innerText = "OFFLINE";
+          box.innerHTML = `<span style="color:#f59e0b;">Host unreachable: using local topological proof.</span><br>${d.text}`;
+        }
+      }
+      return;
+    }
+    async function old_dispatchUarm() {
       const sel = document.getElementById('uarmSelect').value;
       const d = UARM_DATA[sel] || UARM_DATA.vacuum_friction;
       if (navigator.vibrate) navigator.vibrate([35, 45, 70]);

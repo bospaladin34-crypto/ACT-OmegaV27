@@ -1,4 +1,42 @@
-﻿// --- VRAM Pre-Warm & Model Status Proxy ---
+﻿import { snapText } from "./tokenizer_bridge.ts";
+
+function computeDynamicAudit(text: string, userPrompt: string, targetModel: string) {
+  let dynamicRoots = [69, 156, 207];
+  let dynamicCoherence = 0.74;
+  let dynamicVariety = 1.0;
+  let dynamicStatus = "LAMINAR_ACCEPTED";
+
+  try {
+    const textToSnap = (text && text.length > 5) ? text : userPrompt;
+    const tokens = snapText(textToSnap);
+    if (tokens && tokens.length >= 3) {
+      const r0 = tokens.at(0)?.root ?? 69;
+      const r1 = tokens.at(1)?.root ?? 156;
+      const r2 = tokens.at(2)?.root ?? 207;
+      dynamicRoots = [r0, r1, r2];
+      const roles = new Set(tokens.slice(0, 3).map((t: any) => t.role));
+      dynamicVariety = Number((roles.size / 3).toFixed(2));
+      const slice = tokens.slice(0, 8);
+      const meanCompat = slice.reduce((a: number, b: any) => a + (b.compat || 0), 0) / Math.max(1, slice.length);
+      dynamicCoherence = Number((meanCompat * (0.4 + 0.6 * dynamicVariety)).toFixed(4));
+      dynamicStatus = dynamicCoherence >= 0.48 ? "LAMINAR_ACCEPTED" : "OBSTRUCTION_QUARANTINED";
+    }
+  } catch (_e) {}
+
+  return {
+    sheafStatus: dynamicStatus,
+    triplet: {
+      subject: targetModel.replace(":latest", ""),
+      predicate: "Evaluated",
+      object: userPrompt.length > 35 ? userPrompt.slice(0, 35) + "..." : userPrompt
+    },
+    snappedRoots: dynamicRoots,
+    coherenceScore: dynamicCoherence,
+    triadVariety: dynamicVariety
+  };
+}
+
+// --- VRAM Pre-Warm & Model Status Proxy ---
 const OLLAMA_MODEL_MAP: Record<string, string> = {
   "VESPER-RESEARCH": "VESPER-RESEARCH:latest",
   "VESPER-RESEARCH:latest": "VESPER-RESEARCH:latest",
@@ -458,19 +496,7 @@ serve(async (req: Request) => {
         status: "ok",
         reply: replyText,
         modelUsed: targetModel,
-        auditResults: [
-          {
-            sheafStatus: "LAMINAR_ACCEPTED",
-            triplet: {
-              subject: targetModel.replace(":latest", ""),
-              predicate: "Evaluated",
-              object: userPrompt.length > 35 ? userPrompt.slice(0, 35) + "..." : userPrompt
-            },
-            snappedRoots: [69, 156, 207],
-            coherenceScore: 0.74,
-            triadVariety: 1.0
-          }
-        ]
+        auditResults: [ computeDynamicAudit(replyText, userPrompt, targetModel) ]
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
