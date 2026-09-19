@@ -1,4 +1,5 @@
-﻿import { snapText } from "./tokenizer_bridge.ts";
+﻿import { evaluateLeech24 } from "./leech_consensus.ts";
+import { snapText } from "./tokenizer_bridge.ts";
 
 function computeDynamicAudit(text: string, userPrompt: string, targetModel: string) {
   let dynamicRoots = [69, 156, 207];
@@ -457,6 +458,175 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: String(err) }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+  }
+
+    // 24D Leech Lattice Consensus Gateway (E8 ⊕ E8 ⊕ E8)
+    // Unified Distributed UARM 4-Phase Cognitive Chain
+  if (pathname === "/api/uarm/chain" && req.method === "POST") {
+    try {
+      const body = await req.json();
+      const rawPrompt = body.prompt || body.text || "Evaluate vacuum geometric friction and b2 void boundary condition";
+      const edgeSensorContext = body.edgeSensors || { mag_uT: [-0.7, -19.1, -40.5], accel: [-0.2, 5.5, 8.6] };
+
+      // PHASE 1: Edge Observation on Pixel 10 Tensor G5 UMA (Gemma 2B on port 8080)
+      let phase1Output = "";
+      let s3_edge_roots = Array.of(141, 10, 1);
+      const t0 = performance.now();
+
+      try {
+        const strictPrompt = `[ACT-OMEGA v27.0 - UARM PHASE 1 EDGE TRANSDUCER]
+Location: Missoula, Montana (46.8721°N, 113.9940°W) | Terrestrial Anchor: B_tor (-40.5 uT)
+Hardware: Pixel 10 Tensor G5 UMA | Role: Sensor Ingress Transducer
+
+MANDATE:
+Do NOT converse. Do NOT apologize. Do NOT ask questions.
+Output ONLY the physical observation triad:
+Observation: [Missoula B_tor Lock] | Triad: (Subject) -> [Predicate] -> (Object)
+
+Input: ${rawPrompt}
+Observation:`;
+
+        const gemmaRes = await fetch("http://127.0.0.1:8080/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [
+              { role: "user", content: strictPrompt }
+            ],
+            max_tokens: 45,
+            temperature: 0.05
+          })
+        });
+        if (gemmaRes.ok) {
+          const gData = await gemmaRes.json();
+          const rawEmit = gData.choices?.at(0)?.message?.content || "";
+          phase1Output = rawEmit.replace(/\n+/g, " ").trim();
+          const tokens = snapText(phase1Output);
+          if (tokens && tokens.length >= 3) {
+            s3_edge_roots = Array.of(tokens.at(0)?.root ?? 141, tokens.at(1)?.root ?? 10, tokens.at(2)?.root ?? 1);
+          }
+        }
+      } catch (_e) {
+        phase1Output = `[PIXEL 10 G5 TELEMETRY LOCK] Mag: (-0.7, -19.1, -40.5) uT | Accel: (-0.2, 5.5, 8.6) m/s²`;
+      }
+      const p1Duration = Math.round(performance.now() - t0);
+
+      // PHASE 2: Triad Role Arbitration via VESPER-BASE (Phi-3 Mini on port 11434)
+      const t1 = performance.now();
+      let triadData = { subject: "Vacuum Friction", predicate: "Governed By", object: "Toroidal B2 Boundary" };
+      try {
+        const phiRes = await fetch("http://127.0.0.1:11434/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "VESPER-BASE:latest",
+            prompt: `Deconstruct into JSON triad: ${rawPrompt}`,
+            stream: false,
+            options: { temperature: 0.05, num_predict: 120 }
+          })
+        });
+        if (phiRes.ok) {
+          const phiData = await phiRes.json();
+          const clean = phiData.response.replace(/```json|```/g, "").trim();
+          const parsed = JSON.parse(clean);
+          if (parsed.triad) triadData = parsed.triad;
+        }
+      } catch (_) {}
+      const p2Duration = Math.round(performance.now() - t1);
+
+      // PHASE 3: Deep Synthesis via VESPER-RESEARCH / VESPER-CODER (Llama 3.1 8B on port 11434)
+      const t2 = performance.now();
+      const isCode = /code|rust|c\+\+|implement|function|struct|script/i.test(rawPrompt);
+      const specialistModel = isCode ? "VESPER-CODER:latest" : "VESPER-RESEARCH:latest";
+      let specialistReply = "";
+      let s1_research_roots = Array.of(6, 76, 100);
+      let s2_coder_roots = Array.of(107, 40, 190);
+
+      try {
+        const specRes = await fetch("http://127.0.0.1:11434/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: specialistModel,
+            prompt: `[UARM PHASE 3 SYNTHESIS]\nObservation: ${phase1Output}\nTriad: (${triadData.subject}) - [${triadData.predicate}] -> (${triadData.object})\nInquiry:${rawPrompt}`,
+            stream: false,
+            options: { temperature: 0.10, num_predict: 384, num_ctx: 4096 }
+          })
+        });
+        if (specRes.ok) {
+          const sJson = await specRes.json();
+          specialistReply = sJson.response;
+          const sTokens = snapText(specialistReply);
+          if (sTokens && sTokens.length >= 3) {
+            if (isCode) {
+              s2_coder_roots = Array.of(sTokens.at(0)?.root ?? 107, sTokens.at(1)?.root ?? 40, sTokens.at(2)?.root ?? 190);
+            } else {
+              s1_research_roots = Array.of(sTokens.at(0)?.root ?? 6, sTokens.at(1)?.root ?? 76, sTokens.at(2)?.root ?? 100);
+            }
+          }
+        }
+      } catch (_) {}
+      const p3Duration = Math.round(performance.now() - t2);
+
+      // PHASE 4: 24D Leech Lattice (Λ24) Consensus & Commit
+      const consensus = evaluateLeech24(s1_research_roots, s2_coder_roots, s3_edge_roots);
+
+      // Commit Laminar Proof to Canonical Vault
+      if (consensus.consensusReached) {
+        try {
+          const vRecord = {
+            timestamp: new Date().toISOString(),
+            topic: rawPrompt.slice(0, 48),
+            triplet: triadData,
+            vector24: consensus.vector24,
+            macroEpoch: consensus.macroEpoch,
+            landauerJ: consensus.landauerDissipationJ,
+            sheafStatus: "LAMINAR_ACCEPTED"
+          };
+          Deno.writeTextFileSync("C:\\sovereign_manifold_v27\\data\\open\\verified_scientific_vault.jsonl", JSON.stringify(vRecord) + "\n", { append: true });
+        } catch (_) {}
+      }
+
+      return new Response(JSON.stringify({
+        status: "SUCCESS",
+        uarmPipeline: {
+          phase1_edge_observation: { model: "GEMMA-2B (Pixel 10 UMA)", latency_ms: p1Duration, observation: phase1Output, sector3_roots: s3_edge_roots },
+          phase2_gate_arbitration: { model: "VESPER-BASE (Phi-3 Mini)", latency_ms: p2Duration, validated_triad: triadData },
+          phase3_deep_synthesis:   { model: specialistModel, latency_ms: p3Duration, response: specialistReply },
+          phase4_leech_consensus:  consensus
+        }
+      }), {
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ status: "ERROR", message: String(err) }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
+  }
+
+  if (pathname === "/api/leech/consensus" && req.method === "POST") {
+    try {
+      const body = await req.json();
+      const s3_edge = Array.isArray(body.sector3_edge) ? body.sector3_edge : Array.of(141, 10, 1);
+      const s1_research = Array.isArray(body.sector1_research) ? body.sector1_research : Array.of(6, 76, 100);
+      const s2_coder = Array.isArray(body.sector2_coder) ? body.sector2_coder : Array.of(107, 40, 190);
+
+      const consensus = evaluateLeech24(s1_research, s2_coder, s3_edge);
+
+      return new Response(JSON.stringify({
+        status: "SUCCESS",
+        consensus
+      }), {
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ status: "ERROR", message: String(err) }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     }
   }
