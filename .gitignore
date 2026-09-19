@@ -29,3 +29,7 @@ data/blind/_key_sealed*.json
 # Ephemeral Desktop App Profiles & Caches
 data/hud_profile/
 **/hud_profile/
+
+*.gguf
+06_android_edge_ndk/models/
+
