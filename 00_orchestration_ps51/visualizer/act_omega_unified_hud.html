@@ -868,6 +868,35 @@
 
     <!-- PAGE 4: 3D VECTOR SCOPE -->
     <div id="page-scope" class="page-view">
+    <!-- 3D Volumetric Artin Braid Tube Loom (Slot 50) -->
+    <div style="margin-top: 14px; background: rgba(9, 13, 22, 0.9); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 8px; padding: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 13px; font-weight: bold; color: #00e5ff; letter-spacing: 0.5px;">✦ 3D VOLUMETRIC ARTIN BRAID TUBE LOOM (B3 / SLOT 50)</span>
+        <span id="braid-parity-badge" style="font-size: 11px; color: #00ffaa; border: 1px solid #00ffaa; padding: 2px 6px; border-radius: 4px;">Tr(U_res) = 1.000000</span>
+      </div>
+      
+      <div style="position: relative; width: 100%; height: 280px; background: #02040a; border-radius: 6px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.2);">
+        <canvas id="braidTubeCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        <div style="position: absolute; bottom: 6px; left: 8px; right: 8px; display: flex; justify-content: space-between; font-size: 10px; color: #64748b; pointer-events: none;">
+          <span>Drag: Orbit 3D | Scroll: Zoom</span>
+          <span id="tube-phone-sync-status" style="color: #ffd700;">PHONE SYNC: STANDBY</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 8px; background: #040814; border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; padding: 8px; text-align: center;">
+        <span style="font-size: 13px; font-weight: bold; color: #00ffaa;" id="cockpitBraidWord">w = e (Identity)</span>
+        <span style="margin-left: 12px; font-size: 11px; color: #94a3b8;">Crossings: <b id="cockpitBraidCrossings" style="color:#00e5ff;">0</b> | Writhe: <b id="cockpitBraidWrithe" style="color:#ffd700;">0</b></span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr) 1.5fr 1fr; gap: 6px; margin-top: 8px;">
+        <button onclick="injectCockpitBraid('s1')" style="background:#0f172a; border:1px solid #00e5ff; color:#00e5ff; padding:6px; border-radius:4px; font-family:monospace; font-weight:bold; cursor:pointer;">σ₁</button>
+        <button onclick="injectCockpitBraid('s2')" style="background:#0f172a; border:1px solid #00e5ff; color:#00e5ff; padding:6px; border-radius:4px; font-family:monospace; font-weight:bold; cursor:pointer;">σ₂</button>
+        <button onclick="injectCockpitBraid('s1_inv')" style="background:#0f172a; border:1px solid #00e5ff; color:#00e5ff; padding:6px; border-radius:4px; font-family:monospace; font-weight:bold; cursor:pointer;">σ₁⁻¹</button>
+        <button onclick="injectCockpitBraid('s2_inv')" style="background:#0f172a; border:1px solid #00e5ff; color:#00e5ff; padding:6px; border-radius:4px; font-family:monospace; font-weight:bold; cursor:pointer;">σ₂⁻¹</button>
+        <button onclick="injectCockpitBraid('collapse')" style="background:rgba(244,63,94,0.15); border:1px solid #f43f5e; color:#f43f5e; padding:6px; border-radius:4px; font-family:monospace; font-weight:bold; cursor:pointer;">REIDEMEISTER II</button>
+        <button onclick="injectCockpitBraid('reset')" style="background:#0f172a; border:1px solid #64748b; color:#94a3b8; padding:6px; border-radius:4px; font-family:monospace; font-weight:bold; cursor:pointer;">RESET</button>
+      </div>
+    </div>
       <div class="scope-container">
         <canvas id="scopeCanvas" class="scope-canvas" width="600" height="600"></canvas>
       </div>
@@ -2194,6 +2223,336 @@ setInterval(pollPhoneOrientation, 33); // 30 Hz sync
     setInterval(() => {
       hudSyncChannel.postMessage({ type: "COCKPIT_HEARTBEAT", timestamp: Date.now() });
     }, 2000);
+  </script>
+  <script>
+    (function initBraidTubeRenderer() {
+      const canvas = document.getElementById("braidTubeCanvas");
+      if (!canvas) return;
+      const gl = canvas.getContext("webgl");
+      if (!gl) return;
+
+      const vsSource = `
+        attribute vec3 aPosition;
+        attribute vec3 aNormal;
+        attribute vec3 aColor;
+        uniform mat4 uProjection;
+        uniform mat4 uModelView;
+        varying vec3 vNormal;
+        varying vec3 vColor;
+        varying vec3 vFragPos;
+        void main() {
+          vec4 mvPos = uModelView * vec4(aPosition, 1.0);
+          gl_Position = uProjection * mvPos;
+          vNormal = mat3(uModelView) * aNormal;
+          vFragPos = mvPos.xyz;
+          vColor = aColor;
+        }
+      `;
+
+      const fsSource = `
+        precision mediump float;
+        varying vec3 vNormal;
+        varying vec3 vColor;
+        varying vec3 vFragPos;
+        void main() {
+          vec3 N = normalize(vNormal);
+          vec3 L = normalize(vec3(0.5, 1.0, 1.2));
+          vec3 V = normalize(-vFragPos);
+          vec3 H = normalize(L + V);
+          float diff = max(dot(N, L), 0.2);
+          float spec = pow(max(dot(N, H), 0.0), 32.0) * 0.75;
+          float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.0) * 0.45;
+          vec3 col = vColor * diff + vec3(1.0) * spec + vColor * fresnel;
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `;
+
+      function createShader(gl, type, src) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        return s;
+      }
+
+      const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
+      const fs = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      gl.useProgram(prog);
+
+      const aPosLoc = gl.getAttribLocation(prog, "aPosition");
+      const aNormLoc = gl.getAttribLocation(prog, "aNormal");
+      const aColLoc = gl.getAttribLocation(prog, "aColor");
+      const uProjLoc = gl.getUniformLocation(prog, "uProjection");
+      const uMVLoc = gl.getUniformLocation(prog, "uModelView");
+
+      gl.enableVertexAttribArray(aPosLoc);
+      gl.enableVertexAttribArray(aNormLoc);
+      gl.enableVertexAttribArray(aColLoc);
+
+      const posBuf = gl.createBuffer();
+      const normBuf = gl.createBuffer();
+      const colBuf = gl.createBuffer();
+      const idxBuf = gl.createBuffer();
+
+      let word = [];
+      let rotX = 0.25, rotY = -0.35;
+      let camDist = 4.2;
+      let isDragging = false, lastX = 0, lastY = 0;
+      let idxCount = 0;
+
+      canvas.addEventListener("mousedown", e => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+      window.addEventListener("mouseup", () => isDragging = false);
+      canvas.addEventListener("mousemove", e => {
+        if (isDragging) {
+          rotY += (e.clientX - lastX) * 0.008;
+          rotX += (e.clientY - lastY) * 0.008;
+          lastX = e.clientX; lastY = e.clientY;
+        }
+      });
+      canvas.addEventListener("wheel", e => {
+        camDist += e.deltaY * 0.005;
+        camDist = Math.max(1.8, Math.min(8.0, camDist));
+      });
+
+      function buildTubes() {
+        const initialX = [-1.1, 0.0, 1.1];
+        let curPos = [0, 1, 2];
+        const steps = Math.max(1, word.length);
+        const strands = [[], [], []];
+        const yTop = 1.4, yBottom = -1.4;
+
+        const gens = word.length > 0 ? word : ["identity"];
+        for (let sIdx = 0; sIdx < gens.length; sIdx++) {
+          const gen = gens[sIdx];
+          const sSamples = 16;
+          for (let sub = 0; sub < sSamples; sub++) {
+            const u = sub / sSamples;
+            const smoothU = u * u * (3.0 - 2.0 * u);
+            const prog = (sIdx + u) / gens.length;
+            const y = yTop - prog * (yTop - yBottom);
+
+            if (gen === "s1" || gen === "s1_inv" || gen === "σ₁" || gen === "σ₁⁻¹") {
+              const isInv = (gen === "s1_inv" || gen === "σ₁⁻¹");
+              const sL = curPos.indexOf(0), sM = curPos.indexOf(1), sR = curPos.indexOf(2);
+              const xL = -1.1 + smoothU * 1.1;
+              const xM = 0.0 - smoothU * 1.1;
+              const sign = isInv ? -1.0 : 1.0;
+              const zL = sign * 0.38 * Math.sin(Math.PI * smoothU);
+              const zM = -sign * 0.38 * Math.sin(Math.PI * smoothU);
+              strands[sL].push([xL, y, zL]);
+              strands[sM].push([xM, y, zM]);
+              strands[sR].push([1.1, y, 0.0]);
+            } else if (gen === "s2" || gen === "s2_inv" || gen === "σ₂" || gen === "σ₂⁻¹") {
+              const isInv = (gen === "s2_inv" || gen === "σ₂⁻¹");
+              const sL = curPos.indexOf(0), sM = curPos.indexOf(1), sR = curPos.indexOf(2);
+              const xM = 0.0 + smoothU * 1.1;
+              const xR = 1.1 - smoothU * 1.1;
+              const sign = isInv ? -1.0 : 1.0;
+              const zM = sign * 0.38 * Math.sin(Math.PI * smoothU);
+              const zR = -sign * 0.38 * Math.sin(Math.PI * smoothU);
+              strands[sM].push([xM, y, zM]);
+              strands[sR].push([xR, y, zR]);
+              strands[sL].push([-1.1, y, 0.0]);
+            } else {
+              for (let i = 0; i < 3; i++) strands[i].push([initialX[curPos[i]], y, 0.0]);
+            }
+          }
+          if (gen === "s1" || gen === "s1_inv" || gen === "σ₁" || gen === "σ₁⁻¹") {
+            const p0 = curPos.indexOf(0), p1 = curPos.indexOf(1);
+            curPos[p0] = 1; curPos[p1] = 0;
+          } else if (gen === "s2" || gen === "s2_inv" || gen === "σ₂" || gen === "σ₂⁻¹") {
+            const p1 = curPos.indexOf(1), p2 = curPos.indexOf(2);
+            curPos[p1] = 2; curPos[p2] = 1;
+          }
+        }
+
+        const colors = [[0.0, 0.9, 1.0], [0.0, 1.0, 0.67], [1.0, 0.84, 0.0]];
+        const tubeRadius = 0.075;
+        const radialSegs = 10;
+        const positions = [], normals = [], vertexColors = [], indices = [];
+        let baseIdx = 0;
+
+        for (let s = 0; s < 3; s++) {
+          const pts = strands[s];
+          const col = colors[s];
+          for (let i = 0; i < pts.length; i++) {
+            const p = pts[i];
+            let T;
+            if (i === 0) T = [pts[1][0]-p[0], pts[1][1]-p[1], pts[1][2]-p[2]];
+            else if (i === pts.length - 1) T = [p[0]-pts[i-1][0], p[1]-pts[i-1][1], p[2]-pts[i-1][2]];
+            else T = [pts[i+1][0]-pts[i-1][0], pts[i+1][1]-pts[i-1][1], pts[i+1][2]-pts[i-1][2]];
+            const tLen = Math.sqrt(T[0]*T[0] + T[1]*T[1] + T[2]*T[2]) || 1;
+            T = [T[0]/tLen, T[1]/tLen, T[2]/tLen];
+
+            let up = [0, 0, 1];
+            if (Math.abs(T[2]) > 0.95) up = [1, 0, 0];
+            let N = [T[1]*up[2]-T[2]*up[1], T[2]*up[0]-T[0]*up[2], T[0]*up[1]-T[1]*up[0]];
+            const nLen = Math.sqrt(N[0]*N[0] + N[1]*N[1] + N[2]*N[2]) || 1;
+            N = [N[0]/nLen, N[1]/nLen, N[2]/nLen];
+            let B = [T[1]*N[2]-T[2]*N[1], T[2]*N[0]-T[0]*N[2], T[0]*N[1]-T[1]*N[0]];
+
+            for (let r = 0; r < radialSegs; r++) {
+              const theta = (r / radialSegs) * Math.PI * 2;
+              const cosT = Math.cos(theta), sinT = Math.sin(theta);
+              const norm = [cosT*N[0] + sinT*B[0], cosT*N[1] + sinT*B[1], cosT*N[2] + sinT*B[2]];
+              const pos = [p[0] + tubeRadius*norm[0], p[1] + tubeRadius*norm[1], p[2] + tubeRadius*norm[2]];
+              positions.push(...pos);
+              normals.push(...norm);
+              vertexColors.push(...col);
+            }
+
+            if (i > 0) {
+              const prevRing = baseIdx + (i - 1) * radialSegs;
+              const curRing = baseIdx + i * radialSegs;
+              for (let r = 0; r < radialSegs; r++) {
+                const nextR = (r + 1) % radialSegs;
+                indices.push(prevRing + r, curRing + r, curRing + nextR);
+                indices.push(prevRing + r, curRing + nextR, prevRing + nextR);
+              }
+            }
+          }
+          baseIdx += pts.length * radialSegs;
+        }
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, normBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.DYNAMIC_DRAW);
+        idxCount = indices.length;
+      }
+
+      function draw() {
+        if (canvas.clientWidth !== canvas.width || canvas.clientHeight !== canvas.height) {
+          canvas.width = canvas.clientWidth;
+          canvas.height = canvas.clientHeight;
+        }
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0.015, 0.03, 0.06, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.enable(gl.DEPTH_TEST);
+
+        const aspect = canvas.width / canvas.height;
+        const fov = 45 * Math.PI / 180;
+        const near = 0.1, far = 100.0;
+        const f = 1.0 / Math.tan(fov / 2);
+        const proj = [
+          f / aspect, 0, 0, 0,
+          0, f, 0, 0,
+          0, 0, (far + near) / (near - far), -1,
+          0, 0, (2 * far * near) / (near - far), 0
+        ];
+
+        if (!isDragging) { rotY += 0.003; }
+
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+        const mv = [
+          cosY, sinX * sinY, -cosX * sinY, 0,
+          0, cosX, sinX, 0,
+          sinY, -sinX * cosY, cosX * cosY, 0,
+          0, 0, -camDist, 1
+        ];
+
+        gl.uniformMatrix4fv(uProjLoc, false, new Float32Array(proj));
+        gl.uniformMatrix4fv(uMVLoc, false, new Float32Array(mv));
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+        gl.vertexAttribPointer(aPosLoc, 3, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, normBuf);
+        gl.vertexAttribPointer(aNormLoc, 3, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+        gl.vertexAttribPointer(aColLoc, 3, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
+        if (idxCount > 0) {
+          gl.drawElements(gl.TRIANGLES, idxCount, gl.UNSIGNED_SHORT, 0);
+        }
+        requestAnimationFrame(draw);
+      }
+
+      window.injectCockpitBraid = function(action) {
+        if (action === "s1" || action === "s2" || action === "s1_inv" || action === "s2_inv") {
+          word.push(action);
+        } else if (action === "collapse") {
+          let changed = true;
+          while (changed) {
+            changed = false;
+            for (let i = 0; i < word.length - 1; i++) {
+              const a = word[i], b = word[i+1];
+              if ((a === "s1" && b === "s1_inv") || (a === "s1_inv" && b === "s1") ||
+                  (a === "s2" && b === "s2_inv") || (a === "s2_inv" && b === "s2")) {
+                word.splice(i, 2);
+                changed = true;
+                break;
+              }
+            }
+          }
+        } else if (action === "reset") {
+          word = [];
+        }
+
+        updateCockpitBraidUI();
+        buildTubes();
+
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+          window.ws.send(JSON.stringify({ type: "BRAID_ACTION", action: action }));
+        }
+      };
+
+      function updateCockpitBraidUI() {
+        const wordEl = document.getElementById("cockpitBraidWord");
+        const crEl = document.getElementById("cockpitBraidCrossings");
+        const wrEl = document.getElementById("cockpitBraidWrithe");
+        if (wordEl) {
+          wordEl.innerText = word.length > 0 ? ("w = " + word.map(w => {
+            if (w === "s1") return "σ₁";
+            if (w === "s2") return "σ₂";
+            if (w === "s1_inv") return "σ₁⁻¹";
+            if (w === "s2_inv") return "σ₂⁻¹";
+            return w;
+          }).join(" · ")) : "w = e (Identity)";
+        }
+        if (crEl) crEl.innerText = word.length;
+        if (wrEl) {
+          let wr = 0;
+          for (let w of word) {
+            if (w === "s1" || w === "s2") wr++;
+            else if (w === "s1_inv" || w === "s2_inv") wr--;
+          }
+          wrEl.innerText = wr;
+        }
+      }
+
+      window.updateCockpitBraidFromLiveMesh = function(b) {
+        if (b && b.word) {
+          word = b.word;
+          updateCockpitBraidUI();
+          buildTubes();
+          const syncStatus = document.getElementById("tube-phone-sync-status");
+          if (syncStatus) {
+            syncStatus.innerText = "PHONE SYNC: LATCHED (" + word.length + " crossings)";
+            syncStatus.style.color = "#00ffaa";
+          }
+        }
+      };
+
+      window.updateCockpitCameraFromOrientation = function(pitch, roll, yaw) {
+        if (typeof pitch === "number" && typeof roll === "number") {
+          rotX = (pitch * Math.PI / 180) * 0.5 + 0.25;
+          rotY = (roll * Math.PI / 180) * 0.5 - 0.35;
+        }
+      };
+
+      buildTubes();
+      draw();
+    })();
   </script>
 </body>
 </html>
