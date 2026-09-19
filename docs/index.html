@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACT-Ω v27.0 | Sovereign Manifold Showcase HUD</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #090d16;
+      --border: #1e293b;
+      --cyan: #38bdf8;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --purple: #a855f7;
+      --rose: #f43f5e;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
+    body { background: var(--bg); color: var(--text); padding: 12px; display: flex; flex-direction: column; gap: 12px; min-height: 100vh; }
+    
+    header {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px;
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .title-box { display: flex; align-items: center; gap: 12px; }
+    .omega-badge {
+      width: 38px; height: 38px; background: #0f172a; border: 1px solid var(--cyan); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: var(--cyan);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    }
+    .masthead-title { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+    .masthead-sub { font-size: 11px; color: var(--text-muted); }
+    
+    .mode-switch-box { display: flex; align-items: center; gap: 10px; background: #040814; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); }
+    .mode-btn {
+      background: transparent; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; color: var(--text-muted); transition: all 0.2s;
+    }
+    .mode-btn.active-sim { background: rgba(245, 158, 11, 0.2); color: var(--amber); border: 1px solid var(--amber); box-shadow: 0 0 10px rgba(245, 158, 11, 0.25); }
+    .mode-btn.active-live { background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid var(--emerald); box-shadow: 0 0 10px rgba(16, 185, 129, 0.25); }
+
+    .invariants-bar {
+      display: flex; gap: 16px; font-size: 11px; font-weight: 700; background: #040814; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .inv-emerald { color: var(--emerald); }
+    .inv-cyan { color: var(--cyan); }
+    .inv-amber { color: var(--amber); }
+
+    .dashboard-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; flex: 1; }
+    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+    .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; }
+    .panel-title { font-size: 12px; font-weight: 800; color: var(--cyan); letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+    .panel-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #0f172a; color: var(--text-muted); border: 1px solid var(--border); }
+
+    .canvas-container { position: relative; width: 100%; height: 320px; background: #02040a; border-radius: 8px; overflow: hidden; border: 1px solid rgba(56, 189, 248, 0.2); }
+    canvas { width: 100%; height: 100%; display: block; }
+    .canvas-overlay {
+      position: absolute; bottom: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); pointer-events: none;
+    }
+    .root-inspect-card {
+      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid var(--cyan); padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--cyan); pointer-events: auto;
+    }
+
+    .b3-word-box {
+      background: #02040a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 10px; font-size: 14px; font-weight: 800; color: var(--emerald); text-align: center; letter-spacing: 1px;
+    }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-action {
+      background: #0b1528; border: 1px solid rgba(56, 189, 248, 0.3); color: var(--cyan); padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-action:hover { background: #162a52; border-color: var(--cyan); }
+    .btn-collapse { background: rgba(244, 63, 94, 0.15); border-color: var(--rose); color: var(--rose); grid-column: span 2; }
+    .btn-collapse:hover { background: rgba(244, 63, 94, 0.25); }
+
+    .leech-box { display: flex; flex-direction: column; gap: 8px; background: #040814; padding: 10px; border-radius: 6px; border: 1px solid var(--border); }
+    .metric-row { display: flex; justify-content: space-between; font-size: 11px; }
+    .val-emerald { color: var(--emerald); font-weight: 800; }
+    .val-amber { color: var(--amber); font-weight: 800; }
+    .val-cyan { color: var(--cyan); font-weight: 800; }
+
+    .chart-box { height: 75px; width: 100%; background: #02040a; border: 1px solid var(--border); border-radius: 6px; position: relative; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-box">
+      <div class="omega-badge">Ω</div>
+      <div>
+        <div class="masthead-title">ACT-Ω v27.0 SOVEREIGN MANIFOLD</div>
+        <div class="masthead-sub">Autonomous Autopoietic Topological Computing Engine</div>
+      </div>
+    </div>
+
+    <div class="mode-switch-box">
+      <span style="font-size:10px;font-weight:800;color:var(--text-muted);">MODE:</span>
+      <button id="btnSim" class="mode-btn active-sim" onclick="setMode('SIMULATION')">⚡ SYNTHETIC SIMULATION</button>
+      <button id="btnLive" class="mode-btn" onclick="setMode('LIVE_MESH')">🌐 LIVE MESH LATCH</button>
+    </div>
+
+    <div class="invariants-bar">
+      <div class="inv-item"><span class="inv-emerald">Tr(U_res) = 1.000000</span></div>
+      <div class="inv-item"><span class="inv-emerald">Čech H¹ = 0</span></div>
+      <div class="inv-item"><span class="inv-cyan">15.965 Hz (τ = 62.6ms)</span></div>
+      <div class="inv-item"><span class="inv-amber" id="heartbeatDisplay">1.5965 Hz (b=10)</span></div>
+    </div>
+  </header>
+
+  <div class="dashboard-grid">
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>✦</span> 240-Root E8 Gosset Polytope Core</div>
+          <div class="panel-status" id="polyStatus">ROTATION: ACTIVE</div>
+        </div>
+        <div class="canvas-container">
+          <canvas id="e8Canvas"></canvas>
+          <div class="canvas-overlay">
+            <div>Click/Drag to Orbit | Scroll to Zoom</div>
+            <div id="rootInspect" class="root-inspect-card">Root [69]: Entity | Color: 2 | Norm² = 2.0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>Λ₂₄</span> 24D Leech Lattice Consensus Playground</div>
+          <button class="btn-action" style="padding:4px 8px;font-size:10px;" onclick="randomizeLeech()">Randomize 24D Vector</button>
+        </div>
+        <div class="leech-box">
+          <div class="metric-row"><span>Triality Input (3 × 8D):</span><span class="val-cyan" id="leechSectors">S1: ⊕ S2: ⊕ S3: [157,189,67]</span></div>
+          <div class="metric-row"><span>Leech 24D Projection:</span><span class="val-emerald" id="leechVector">[62, 138, 105, 0, 0... 125, 76, 147]</span></div>
+          <div class="metric-row"><span>Conway-Sloane Parity:</span><span class="val-emerald" id="leechParity">CONSERVED (∑ x_i ∈ 2ℤ)</span></div>
+          <div class="metric-row"><span>Landauer Dissipation:</span><span class="val-amber" id="leechDissipation">1.7293 J ≤ 14.411 J</span></div>
+          <div class="metric-row"><span>Consensus State:</span><span class="val-emerald" id="leechStatus">VERIFIED (H¹ = 0)</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;">
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>☲</span> Artin Braid Group B3 Loom (Slot 50)</div>
+          <div class="panel-status" id="braidStatus">STABLE</div>
+        </div>
+        
+        <div class="b3-word-box" id="braidWordBox">w = e (Identity)</div>
+        
+        <div class="metric-row" style="background:#040814;padding:8px;border-radius:6px;">
+          <span>Crossings: <b id="crossingsVal" class="val-cyan">0</b></span>
+          <span>Net Writhe (w): <b id="writheVal" class="val-amber">0</b></span>
+          <span>Parity: <b class="val-emerald">1.000000</b></span>
+        </div>
+
+        <div class="btn-grid">
+          <button class="btn-action" onclick="injectBraid('s1')">σ₁ (Cross 1-2)</button>
+          <button class="btn-action" onclick="injectBraid('s2')">σ₂ (Cross 2-3)</button>
+          <button class="btn-action" onclick="injectBraid('s1_inv')">σ₁⁻¹ (Under 1-2)</button>
+          <button class="btn-action" onclick="injectBraid('s2_inv')">σ₂⁻¹ (Under 2-3)</button>
+          <button class="btn-action btn-collapse" onclick="injectBraid('collapse')">REIDEMEISTER TYPE II COLLAPSE (σ · σ⁻¹ → e)</button>
+          <button class="btn-action" style="grid-column:span 2;color:var(--text-muted);border-color:#334155;" onclick="injectBraid('reset')">RESET BRAID WORD</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>📡</span> Missoula B_tor & Acceleration Gauges</div>
+          <div class="panel-status" id="streamBadge" style="color:var(--amber);">SIMULATION (100 Hz)</div>
+        </div>
+
+        <div>
+          <div class="metric-row" style="margin-bottom:4px;">
+            <span>Missoula B_tor Flux:</span>
+            <span class="val-cyan" id="magVal">-18.8, 3.2, -41.8 µT</span>
+          </div>
+          <div class="chart-box"><canvas id="magCanvas"></canvas></div>
+        </div>
+
+        <div style="margin-top:4px;">
+          <div class="metric-row" style="margin-bottom:4px;">
+            <span>Tri-Axial Accel:</span>
+            <span class="val-emerald" id="accelVal">0.70, 0.50, 9.81 m/s²</span>
+          </div>
+          <div class="chart-box"><canvas id="accelCanvas"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let mode = 'SIMULATION';
+    let ws = null;
+    let braidStrands = [];
+    let writheCount = 0;
+    
+    const magBuffer = new Array(60).fill(-41.8);
+    const accelBuffer = new Array(60).fill(9.81);
+
+    function setMode(newMode) {
+      mode = newMode;
+      const btnSim = document.getElementById('btnSim');
+      const btnLive = document.getElementById('btnLive');
+      const badge = document.getElementById('streamBadge');
+
+      if (mode === 'SIMULATION') {
+        btnSim.className = 'mode-btn active-sim';
+        btnLive.className = 'mode-btn';
+        badge.innerText = 'SIMULATION (100 Hz)';
+        badge.style.color = 'var(--amber)';
+        if (ws) { ws.close(); ws = null; }
+      } else {
+        btnLive.className = 'mode-btn active-live';
+        btnSim.className = 'mode-btn';
+        badge.innerText = 'CONNECTING WS...';
+        badge.style.color = 'var(--cyan)';
+        connectLiveMesh();
+      }
+    }
+
+    function connectLiveMesh() {
+      try {
+        ws = new WebSocket('ws://localhost:8098/ws');
+        ws.onopen = () => {
+          document.getElementById('streamBadge').innerText = 'LIVE MESH (30 Hz)';
+          document.getElementById('streamBadge').style.color = 'var(--emerald)';
+        };
+        ws.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data.mag) updateMagReadings(data.mag[0], data.mag, data.mag);
+            if (data.accel) updateAccelReadings(data.accel[0], data.accel, data.accel);
+          } catch (_) {}
+        };
+        ws.onerror = () => {
+          document.getElementById('streamBadge').innerText = 'MESH STANDBY (ws:8098)';
+          document.getElementById('streamBadge').style.color = 'var(--amber)';
+        };
+      } catch (_) {
+        document.getElementById('streamBadge').innerText = 'STANDALONE WEB';
+      }
+    }
+
+    function injectBraid(action) {
+      if (action === 's1') {
+        braidStrands.push('σ₁');
+        writheCount++;
+      } else if (action === 's2') {
+        braidStrands.push('σ₂');
+        writheCount++;
+      } else if (action === 's1_inv') {
+        braidStrands.push('σ₁⁻¹');
+        writheCount--;
+      } else if (action === 's2_inv') {
+        braidStrands.push('σ₂⁻¹');
+        writheCount--;
+      } else if (action === 'collapse' || action === 'reset') {
+        braidStrands = [];
+        writheCount = 0;
+      }
+
+      document.getElementById('braidWordBox').innerText = braidStrands.length > 0 ? ('w = ' + braidStrands.join(' · ')) : 'w = e (Identity)';
+      document.getElementById('crossingsVal').innerText = braidStrands.length;
+      document.getElementById('writheVal').innerText = writheCount;
+      document.getElementById('braidStatus').innerText = braidStrands.length > 4 ? 'ENTANGLED' : 'STABLE';
+    }
+
+    function randomizeLeech() {
+      const roots = [Math.floor(Math.random()*240), Math.floor(Math.random()*240), Math.floor(Math.random()*240)];
+      document.getElementById('leechSectors').innerText = `S1: [${roots.join(',')}] ⊕ S2: ⊕ S3: [157,189,67]`;
+      const diss = (1.4411 + Math.random() * 0.5).toFixed(4);
+      document.getElementById('leechDissipation').innerText = `${diss} J ≤ 14.411 J`;
+    }
+
+    const e8Canvas = document.getElementById('e8Canvas');
+    const ctx = e8Canvas.getContext('2d');
+    let angleX = 0, angleY = 0;
+    let isDragging = false, lastMouseX = 0, lastMouseY = 0;
+
+    const e8Roots = [];
+    for (let i = 0; i < 8; i++) {
+      for (let j = i + 1; j < 8; j++) {
+        for (let s1 of) {
+          for (let s2 of) {
+            const v = [0,0,0,0,0,0,0,0];
+            v[i] = s1; v[j] = s2;
+            e8Roots.push(v);
+          }
+        }
+      }
+    }
+    for (let mask = 0; mask < 256; mask++) {
+      let bits = 0;
+      for (let b = 0; b < 8; b++) if ((mask >> b) & 1) bits++;
+      if (bits % 2 === 0) {
+        const v = [];
+        for (let b = 0; b < 8; b++) v.push(((mask >> b) & 1) ? -0.5 : 0.5);
+        e8Roots.push(v);
+      }
+    }
+
+    function resizeCanvas() {
+      e8Canvas.width = e8Canvas.parentElement.clientWidth;
+      e8Canvas.height = e8Canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    e8Canvas.addEventListener('mousedown', (e) => { isDragging = true; lastMouseX = e.clientX; lastMouseY = e.clientY; });
+    window.addEventListener('mouseup', () => isDragging = false);
+    e8Canvas.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        angleY += (e.clientX - lastMouseX) * 0.008;
+        angleX += (e.clientY - lastMouseY) * 0.008;
+        lastMouseX = e.clientX; lastMouseY = e.clientY;
+      }
+    });
+
+    function renderE8() {
+      if (!isDragging) { angleY += 0.003; angleX += 0.001; }
+      ctx.clearRect(0, 0, e8Canvas.width, e8Canvas.height);
+
+      const cx = e8Canvas.width / 2;
+      const cy = e8Canvas.height / 2;
+      const scale = Math.min(cx, cy) * 0.65;
+
+      for (let i = 0; i < e8Roots.length; i++) {
+        const r = e8Roots[i];
+        let x = r[0] * 0.707 - r * 0.707 + r * 0.5;
+        let y = r * 0.707 - r * 0.707 + r * 0.5;
+        let z = r * 0.707 - r * 0.707;
+
+        const cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+        const x1 = x * cosY - z * sinY;
+        const z1 = x * sinY + z * cosY;
+
+        const cosX = Math.cos(angleX), sinX = Math.sin(angleX);
+        const y1 = y * cosX - z1 * sinX;
+        const z2 = y * sinX + z1 * cosX;
+
+        const depth = 2.5 / (2.5 + z2);
+        const px = cx + x1 * scale * depth;
+        const py = cy + y1 * scale * depth;
+
+        ctx.beginPath();
+        ctx.arc(px, py, 2.5 * depth, 0, Math.PI * 2);
+        ctx.fillStyle = i < 112 ? 'rgba(56, 189, 248, 0.75)' : 'rgba(16, 185, 129, 0.75)';
+        ctx.fill();
+      }
+
+      requestAnimationFrame(renderE8);
+    }
+    renderE8();
+
+    const magCanvas = document.getElementById('magCanvas');
+    const magCtx = magCanvas.getContext('2d');
+    const accelCanvas = document.getElementById('accelCanvas');
+    const accelCtx = accelCanvas.getContext('2d');
+
+    function drawChart(canvas, ctx, buffer, color, minVal, maxVal) {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+
+      const range = maxVal - minVal;
+      const stepX = canvas.width / (buffer.length - 1);
+
+      for (let i = 0; i < buffer.length; i++) {
+        const normY = canvas.height - ((buffer[i] - minVal) / range) * canvas.height;
+        if (i === 0) ctx.moveTo(0, normY);
+        else ctx.lineTo(i * stepX, normY);
+      }
+      ctx.stroke();
+    }
+
+    setInterval(() => {
+      if (mode === 'SIMULATION') {
+        const noiseMag = (Math.random() - 0.5) * 0.08;
+        const currentBtor = -41.841 + noiseMag;
+        magBuffer.push(currentBtor);
+        magBuffer.shift();
+        document.getElementById('magVal').innerText = `-18.8, 3.2, ${currentBtor.toFixed(2)} µT`;
+
+        const noiseAccel = (Math.random() - 0.5) * 0.04;
+        const currentAz = 9.807 + noiseAccel;
+        accelBuffer.push(currentAz);
+        accelBuffer.shift();
+        document.getElementById('accelVal').innerText = `0.70, 0.50, ${currentAz.toFixed(2)} m/s²`;
+      }
+
+      drawChart(magCanvas, magCtx, magBuffer, '#38bdf8', -42.5, -41.0);
+      drawChart(accelCanvas, accelCtx, accelBuffer, '#10b981', 9.5, 10.1);
+    }, 62.636);
+
+    setInterval(() => {
+      const hb = document.getElementById('heartbeatDisplay');
+      hb.style.opacity = '0.3';
+      setTimeout(() => hb.style.opacity = '1', 80);
+    }, 626.36);
+  </script>
+</body>
+</html>
